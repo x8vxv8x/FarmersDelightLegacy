@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CuttingBoardRecipeManager;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModSounds;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCuttingBoard;
@@ -15,20 +15,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemShears;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
+import net.minecraft.item.*;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -262,7 +251,7 @@ public class BlockCuttingBoard extends BlockHorizontal implements ITileEntityPro
                 || stack.getItem() instanceof ItemShears;
     }
 
-    @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
+    @Mod.EventBusSubscriber(modid = FarmersDelightLegacy.MOD_ID)
     public static class ToolCarvingEvent {
 
         @SubscribeEvent

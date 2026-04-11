@@ -138,6 +138,7 @@ farmersdelight.container.recipe_book.cookable=Zobrazujú sa variteľné
 farmersdelight.item.skillet.how_to_cook=Použi svoju druhú ruku na držanie ingrediencií!
 farmersdelight.jei.chance=%1$s%% šanca
 farmersdelight.jei.cooking=Varenie
+farmersdelight.jei.campfire=Varenie na táboráku
 farmersdelight.jei.cutting=Denko
 farmersdelight.jei.decomposition=Rozklad
 farmersdelight.jei.decomposition.accelerators=Zrýchlené susednými aktivátormi (pozri nižšie)
@@ -257,3 +258,5 @@ item.farmersdelight.vegetable_noodles.name=Zeleninové rezance
 item.farmersdelight.vegetable_soup.name=Zeleninová polievka
 item.farmersdelight.wheat_dough.name=Cesto z múky
 itemGroup.farmersdelight=Potešenie farmára
+
+item.farmersdelight.pumpkin_pie_slice.name=Kusok tekvicoveho kolaca

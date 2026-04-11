@@ -1,18 +1,20 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
-import com.wdcftgg.farmersdelight.Tags;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockBush;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.IGrowable;
-import net.minecraft.block.SoundType;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +22,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockWildRice extends BlockBush implements IGrowable {
@@ -87,16 +90,50 @@ public class BlockWildRice extends BlockBush implements IGrowable {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        if (state.getValue(HALF) == BlockDoublePlant.EnumBlockHalf.UPPER) {
-            return Item.getItemFromBlock(Blocks.AIR);
-        }
-        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(Tags.MOD_ID, "wild_rice"));
-        return item != null ? item : Item.getItemFromBlock(this);
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "rice"));
+        return item != null ? item : Item.getItemFromBlock(Blocks.AIR);
     }
 
     @Override
     public int quantityDropped(Random random) {
         return 1;
+    }
+
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state,
+                             @Nullable TileEntity te, ItemStack stack) {
+        player.addStat(StatList.getBlockStats(this));
+        player.addExhaustion(0.005F);
+        if (worldIn.isRemote || player.capabilities.isCreativeMode) {
+            return;
+        }
+
+        if (!hasCounterpart(worldIn, pos, state)) {
+            return;
+        }
+
+        boolean usingShears = stack.getItem() == Items.SHEARS;
+        Item dropItem;
+        if (usingShears) {
+            dropItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "wild_rice"));
+        } else {
+            dropItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "rice"));
+        }
+        if (dropItem != null) {
+            spawnAsEntity(worldIn, pos, new ItemStack(dropItem));
+        }
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        if (!hasCounterpart(world, pos, state)) {
+            return;
+        }
+
+        Item riceItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "rice"));
+        if (riceItem != null) {
+            drops.add(new ItemStack(riceItem));
+        }
     }
 
     @Override
@@ -157,6 +194,13 @@ public class BlockWildRice extends BlockBush implements IGrowable {
             }
         }
         return worldIn.getBlockState(soilPos).getMaterial() == Material.WATER;
+    }
+
+    private boolean hasCounterpart(IBlockAccess world, BlockPos pos, IBlockState state) {
+        BlockDoublePlant.EnumBlockHalf half = state.getValue(HALF);
+        BlockPos counterpartPos = half == BlockDoublePlant.EnumBlockHalf.LOWER ? pos.up() : pos.down();
+        IBlockState counterpartState = world.getBlockState(counterpartPos);
+        return counterpartState.getBlock() == this && counterpartState.getValue(HALF) != half;
     }
 }
 

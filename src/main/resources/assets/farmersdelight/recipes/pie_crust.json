@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "wMw",
+    " w "
+  ],
+  "key": {
+    "M": {
+      "type": "forge:ore_dict",
+      "ore": "listAllmilk"
+    },
+    "w": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "result": {
+    "item": "farmersdelight:pie_crust"
+  }
+}

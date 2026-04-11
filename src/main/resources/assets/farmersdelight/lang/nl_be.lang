@@ -132,6 +132,7 @@ farmersdelight.container.cooking_pot.served_on=Geserveerd op: %s
 farmersdelight.item.skillet.how_to_cook=Gebruik je andere hand om ingrediënten vast te houden!
 farmersdelight.jei.chance=%1$s%% kans
 farmersdelight.jei.cooking=Koken
+farmersdelight.jei.campfire=Koken op kampvuur
 farmersdelight.jei.cutting=Snijplank
 farmersdelight.jei.decomposition=Ontleding
 farmersdelight.jei.decomposition.accelerators=Versneld door aangrenzende activatoren (zie hieronder)
@@ -242,3 +243,5 @@ item.farmersdelight.vegetable_noodles.name=Groente Noedels
 item.farmersdelight.vegetable_soup.name=Groentesoep
 item.farmersdelight.wheat_dough.name=Tarwedeeg
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Stuk pompoentaart

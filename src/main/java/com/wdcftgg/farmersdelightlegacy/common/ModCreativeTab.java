@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,10 +9,10 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public final class ModCreativeTab {
 
-    public static final CreativeTabs TAB = new CreativeTabs(Tags.MOD_ID) {
+    public static final CreativeTabs TAB = new CreativeTabs(FarmersDelightLegacy.MOD_ID) {
         @Override
         public ItemStack createIcon() {
-            Item tomatoItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(Tags.MOD_ID, "tomato"));
+            Item tomatoItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "tomato"));
             if (tomatoItem != null) {
                 return new ItemStack(tomatoItem);
             }

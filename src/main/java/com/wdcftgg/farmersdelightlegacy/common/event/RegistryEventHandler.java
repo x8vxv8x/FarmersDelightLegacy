@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.event;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModOreDictionary;
@@ -12,7 +12,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber(modid = Tags.MOD_ID)
+@Mod.EventBusSubscriber(modid = FarmersDelightLegacy.MOD_ID)
 public final class RegistryEventHandler {
 
     private RegistryEventHandler() {

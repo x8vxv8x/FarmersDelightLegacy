@@ -124,3 +124,7 @@ item.farmersdelight.tree_bark.name=tree skin
 item.farmersdelight.vegetable_soup.name=Leaf Soup
 item.farmersdelight.wheat_dough.name=Weet Blob
 itemGroup.farmersdelight=Yum Yum Mod
+
+item.farmersdelight.pumpkin_pie_slice.name=Slais ov Pumpkin Pai
+
+farmersdelight.jei.campfire=Campfire Cooking

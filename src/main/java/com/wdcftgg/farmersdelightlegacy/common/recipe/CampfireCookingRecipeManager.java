@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -183,7 +183,7 @@ public final class CampfireCookingRecipeManager {
         if (path == null || path.isEmpty()) {
             return null;
         }
-        ResourceLocation itemId = path.contains(":") ? new ResourceLocation(path) : new ResourceLocation(Tags.MOD_ID, path);
+        ResourceLocation itemId = path.contains(":") ? new ResourceLocation(path) : new ResourceLocation(FarmersDelightLegacy.MOD_ID, path);
         return ForgeRegistries.ITEMS.getValue(itemId);
     }
 

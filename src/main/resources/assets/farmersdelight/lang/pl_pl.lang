@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Pokazuje przepisy które można ug
 farmersdelight.item.skillet.how_to_cook=Użyj drugiej ręki żeby trzymać składniki!
 farmersdelight.jei.chance=%1$s%% szansy
 farmersdelight.jei.cooking=Gotowanie
+farmersdelight.jei.campfire=Gotowanie na ognisku
 farmersdelight.jei.cutting=Deska do krojenia
 farmersdelight.jei.decomposition=Rozkład
 farmersdelight.jei.decomposition.accelerators=Przyspieszony przez przyległe aktywatory (patrz poniżej)
@@ -277,3 +278,5 @@ item.farmersdelight.vegetable_noodles.name=Makaron z warzywami
 item.farmersdelight.vegetable_soup.name=Zupa warzywna
 item.farmersdelight.wheat_dough.name=Ciasto pszenne
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Kawalek ciasta dyniowego

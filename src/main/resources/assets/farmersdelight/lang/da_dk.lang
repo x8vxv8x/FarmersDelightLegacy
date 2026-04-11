@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Viser Cookable
 farmersdelight.item.skillet.how_to_cook=Brug din anden hånd til at holde ingredienserne!
 farmersdelight.jei.chance=%1$s%% mulighed
 farmersdelight.jei.cooking=Madlavning
+farmersdelight.jei.campfire=Båldmadlavning
 farmersdelight.jei.cutting=Skærebræt
 farmersdelight.jei.decomposition=Nedbrydning
 farmersdelight.jei.decomposition.accelerators=Fremskyndet af tilstødende aktivatorer (se nedenfor)
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=Grøntsagsnudler
 item.farmersdelight.vegetable_soup.name=Grøntsagssuppe
 item.farmersdelight.wheat_dough.name=Hvededej
 itemGroup.farmersdelight=Landmandsglæde
+
+item.farmersdelight.pumpkin_pie_slice.name=Stykke graeskartaerte

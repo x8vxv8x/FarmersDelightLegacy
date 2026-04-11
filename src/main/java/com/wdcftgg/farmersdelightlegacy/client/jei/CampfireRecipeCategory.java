@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.client.jei;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 public final class CampfireRecipeCategory implements IRecipeCategory<CampfireJeiRecipe> {
 
-    private static final ResourceLocation JEI_TEXTURE = new ResourceLocation(Tags.MOD_ID, "textures/gui/jei/campfire.png");
+    private static final ResourceLocation JEI_TEXTURE = new ResourceLocation(FarmersDelightLegacy.MOD_ID, "textures/gui/jei/campfire.png");
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 
     private final IDrawable background;
@@ -48,7 +48,7 @@ public final class CampfireRecipeCategory implements IRecipeCategory<CampfireJei
 
     @Override
     public String getModName() {
-        return Tags.MOD_NAME;
+        return FarmersDelightLegacy.MOD_NAME;
     }
 
     @Override

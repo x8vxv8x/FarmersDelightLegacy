@@ -160,6 +160,7 @@ farmersdelight.item.skillet.how_to_cook=Usa l'altra mano per tenere gli ingredie
 farmersdelight.item.skillet.underwater=Non puoi cucinare sottacqua...
 farmersdelight.jei.chance=%1$s%% di possibilità
 farmersdelight.jei.cooking=Cottura
+farmersdelight.jei.campfire=Cucina al falò
 farmersdelight.jei.cutting=Tagliere
 farmersdelight.jei.decomposition=Decomposizione
 farmersdelight.jei.decomposition.accelerators=Velocizzato da attivatori adiacenti (vedi sotto)
@@ -287,3 +288,5 @@ item.farmersdelight.vegetable_noodles.name=Noodles con verdure
 item.farmersdelight.vegetable_soup.name=Zuppa di verdure
 item.farmersdelight.wheat_dough.name=Impasto
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Fetta di torta di zucca

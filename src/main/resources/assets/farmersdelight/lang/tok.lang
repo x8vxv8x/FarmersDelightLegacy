@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=ijo tan poki seli telo
 farmersdelight.item.skillet.how_to_cook=o luka e moku kepeken luka ante sina!
 farmersdelight.jei.chance=ken %1$s%%
 farmersdelight.jei.cooking=seli moku
+farmersdelight.jei.campfire=moku pi seli
 farmersdelight.jei.cutting=supa kipisi
 farmersdelight.jei.decomposition=pakala tenpo
 farmersdelight.jei.decomposition.accelerators=ijo ni li lon poka la tenpo ante li kama lili: (o lukin anpa)
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=kili ma lon pan linja
 item.farmersdelight.vegetable_soup.name=telo moku pi kili ma
 item.farmersdelight.wheat_dough.name=pan lete
 itemGroup.farmersdelight=ante Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=kipisi pi panpi

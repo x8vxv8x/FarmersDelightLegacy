@@ -160,6 +160,7 @@ farmersdelight.item.skillet.how_to_cook=用另一只手把食物拿好！
 farmersdelight.item.skillet.underwater=在水里可没法煎啊……
 farmersdelight.jei.chance=%1$s%%的概率
 farmersdelight.jei.cooking=烹饪
+farmersdelight.jei.campfire=营火烹饪
 farmersdelight.jei.cutting=砧板
 farmersdelight.jei.decomposition=分解
 farmersdelight.jei.decomposition.accelerators=周围有以下催化物时加快
@@ -287,3 +288,5 @@ item.farmersdelight.vegetable_noodles.name=蔬菜面
 item.farmersdelight.vegetable_soup.name=蔬菜汤
 item.farmersdelight.wheat_dough.name=面团
 itemGroup.farmersdelight=农夫乐事
+
+item.farmersdelight.pumpkin_pie_slice.name=南瓜派切片

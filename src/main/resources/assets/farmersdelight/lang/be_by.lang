@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Даступныя да прыга
 farmersdelight.item.skillet.how_to_cook=Трымайце інгрэдыенты ў другой руцэ!
 farmersdelight.jei.chance=Верагоднасць %1$s%%
 farmersdelight.jei.cooking=Кулінарыя
+farmersdelight.jei.campfire=Гатаванне на вогнішчы
 farmersdelight.jei.cutting=Днушка
 farmersdelight.jei.decomposition=Гніенне
 farmersdelight.jei.decomposition.accelerators=Паскараецца наступнымі ўзбуджальнікамі (глядзіце ніжэй)
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=Лапша з гароднінай
 item.farmersdelight.vegetable_soup.name=Суп з гароднінай
 item.farmersdelight.wheat_dough.name=Пшанічнае цеста
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Lustachka harbuzovaga piraha

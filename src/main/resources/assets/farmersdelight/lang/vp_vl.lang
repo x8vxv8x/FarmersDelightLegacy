@@ -160,6 +160,7 @@ farmersdelight.item.skillet.how_to_cook=Bruk ander hant per nasi kunjating!
 farmersdelight.item.skillet.underwater=Dekinaj kunja li ine ishke...
 farmersdelight.jei.chance=%1$s%% tabunzma
 farmersdelight.jei.cooking=Kunja
+farmersdelight.jei.campfire=Campfire Cooking
 farmersdelight.jei.cutting=Tser
 farmersdelight.jei.decomposition=Bli namtingmyl
 farmersdelight.jei.decomposition.accelerators=Mahabistra akote Mahabistradado kara (da se una)
@@ -286,3 +287,5 @@ item.farmersdelight.vegetable_noodles.name=Ovoshi-etlet
 item.farmersdelight.vegetable_soup.name=Ovoshista
 item.farmersdelight.wheat_dough.name=Protopan
 itemGroup.farmersdelight=Glaudai fu Nunchangdjin
+
+item.farmersdelight.pumpkin_pie_slice.name=Slice o' Pumpkin Pie

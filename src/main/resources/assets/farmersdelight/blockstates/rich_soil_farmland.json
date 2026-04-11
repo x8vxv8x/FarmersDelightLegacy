@@ -1,7 +1,12 @@
 {
   "variants": {
-    "normal": {
-      "model": "farmersdelight:rich_soil_farmland"
-    }
+    "moisture=0": { "model": "farmersdelight:rich_soil_farmland" },
+    "moisture=1": { "model": "farmersdelight:rich_soil_farmland_moist" },
+    "moisture=2": { "model": "farmersdelight:rich_soil_farmland_moist" },
+    "moisture=3": { "model": "farmersdelight:rich_soil_farmland_moist" },
+    "moisture=4": { "model": "farmersdelight:rich_soil_farmland_moist" },
+    "moisture=5": { "model": "farmersdelight:rich_soil_farmland_moist" },
+    "moisture=6": { "model": "farmersdelight:rich_soil_farmland_moist" },
+    "moisture=7": { "model": "farmersdelight:rich_soil_farmland_moist" }
   }
 }

@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=顯示可用
 farmersdelight.item.skillet.how_to_cook=用副手拿著食材！
 farmersdelight.jei.chance=%1$s%% 機率
 farmersdelight.jei.cooking=烹飪
+farmersdelight.jei.campfire=營火烹飪
 farmersdelight.jei.cutting=砧板
 farmersdelight.jei.decomposition=分解作用
 farmersdelight.jei.decomposition.accelerators=能夠加速分解過程（詳見以下）
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=高麗菜麵
 item.farmersdelight.vegetable_soup.name=菜湯
 item.farmersdelight.wheat_dough.name=小麥麵團
 itemGroup.farmersdelight=農夫樂事
+
+item.farmersdelight.pumpkin_pie_slice.name=南瓜派切片

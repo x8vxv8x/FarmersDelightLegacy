@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "farmersdelight:cooked_bacon"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "listAllveggie"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "cropTomato"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:bacon_sandwich"
+  }
+}

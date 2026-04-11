@@ -6,18 +6,50 @@ import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockWildCrop extends BlockBush implements IGrowable {
     private static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.125D, 0.0D, 0.125D, 0.875D, 0.8125D, 0.875D);
 
-    public BlockWildCrop() {
+    private final String primaryDropId;
+    private final int primaryFortuneMultiplier;
+    private final String rareDropId;
+    private final float rareDropChance;
+    private final String secondaryDropId;
+    private final int secondaryDropMin;
+    private final int secondaryDropMax;
+
+    public BlockWildCrop(String primaryDropId,
+                         int primaryFortuneMultiplier,
+                         @Nullable String rareDropId,
+                         float rareDropChance,
+                         @Nullable String secondaryDropId,
+                         int secondaryDropMin,
+                         int secondaryDropMax) {
         super(Material.PLANTS);
+        this.primaryDropId = primaryDropId;
+        this.primaryFortuneMultiplier = Math.max(0, primaryFortuneMultiplier);
+        this.rareDropId = rareDropId;
+        this.rareDropChance = Math.max(0.0F, rareDropChance);
+        this.secondaryDropId = secondaryDropId;
+        this.secondaryDropMin = Math.max(0, secondaryDropMin);
+        this.secondaryDropMax = Math.max(this.secondaryDropMin, secondaryDropMax);
         this.setHardness(0.0F);
         this.setSoundType(SoundType.PLANT);
         this.setTickRandomly(true);
@@ -26,6 +58,11 @@ public class BlockWildCrop extends BlockBush implements IGrowable {
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return SHAPE;
+    }
+
+    @Override
+    public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos) {
+        return false;
     }
 
     @Override
@@ -67,6 +104,71 @@ public class BlockWildCrop extends BlockBush implements IGrowable {
         if (worldIn.isAirBlock(target) && this.canPlaceBlockAt(worldIn, target)) {
             worldIn.setBlockState(target, this.getDefaultState(), 2);
         }
+    }
+
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state,
+                             @Nullable TileEntity te, ItemStack stack) {
+        player.addStat(StatList.getBlockStats(this));
+        player.addExhaustion(0.005F);
+        if (worldIn.isRemote || player.capabilities.isCreativeMode) {
+            return;
+        }
+
+        boolean usingShears = stack.getItem() == Items.SHEARS;
+        int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
+        NonNullList<ItemStack> drops = NonNullList.create();
+        addConfiguredDrops(drops, usingShears, fortune, worldIn.rand);
+        for (ItemStack drop : drops) {
+            spawnAsEntity(worldIn, pos, drop);
+        }
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        Random random = world instanceof World ? ((World) world).rand : RANDOM;
+        addConfiguredDrops(drops, false, fortune, random);
+    }
+
+    private void addConfiguredDrops(NonNullList<ItemStack> drops, boolean usingShears, int fortune, Random random) {
+        if (usingShears) {
+            drops.add(new ItemStack(this));
+            return;
+        }
+
+        Item primaryItem = resolveItem(primaryDropId);
+        if (primaryItem != null) {
+            int count = 1;
+            if (fortune > 0 && primaryFortuneMultiplier > 0) {
+                count += random.nextInt(fortune * primaryFortuneMultiplier + 1);
+            }
+            drops.add(new ItemStack(primaryItem, Math.max(1, count)));
+        }
+
+        if (rareDropId != null && random.nextFloat() < rareDropChance) {
+            Item rareItem = resolveItem(rareDropId);
+            if (rareItem != null) {
+                drops.add(new ItemStack(rareItem));
+            }
+        }
+
+        if (secondaryDropId != null && secondaryDropMax > 0) {
+            Item secondaryItem = resolveItem(secondaryDropId);
+            if (secondaryItem != null) {
+                int amount = secondaryDropMin;
+                if (secondaryDropMax > secondaryDropMin) {
+                    amount += random.nextInt(secondaryDropMax - secondaryDropMin + 1);
+                }
+                if (amount > 0) {
+                    drops.add(new ItemStack(secondaryItem, amount));
+                }
+            }
+        }
+    }
+
+    @Nullable
+    private Item resolveItem(String id) {
+        return ForgeRegistries.ITEMS.getValue(new net.minecraft.util.ResourceLocation(id));
     }
 }
 

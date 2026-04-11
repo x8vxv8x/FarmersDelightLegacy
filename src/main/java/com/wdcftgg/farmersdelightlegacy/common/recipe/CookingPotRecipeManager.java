@@ -1,10 +1,10 @@
 package com.wdcftgg.farmersdelightlegacy.common.recipe;
 
-import com.wdcftgg.farmersdelight.Tags;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -174,7 +174,7 @@ public final class CookingPotRecipeManager {
         if (path.contains(":")) {
             itemId = new ResourceLocation(path);
         } else {
-            itemId = new ResourceLocation(Tags.MOD_ID, path);
+            itemId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, path);
         }
         return ForgeRegistries.ITEMS.getValue(itemId);
     }

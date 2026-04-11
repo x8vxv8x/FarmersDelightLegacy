@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "fd_sweet_berry_cheesecake",
+  "pattern": [
+    "sss",
+    "sss",
+    "mOm"
+  ],
+  "key": {
+    "O": {
+      "item": "farmersdelight:pie_crust"
+    },
+    "m": {
+      "type": "forge:ore_dict",
+      "ore": "listAllmilk"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "listAllberry"
+    }
+  },
+  "result": {
+    "item": "farmersdelight:sweet_berry_cheesecake"
+  }
+}

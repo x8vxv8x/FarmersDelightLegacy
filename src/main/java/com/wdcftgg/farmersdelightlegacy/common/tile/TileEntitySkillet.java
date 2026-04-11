@@ -3,16 +3,18 @@ package com.wdcftgg.farmersdelightlegacy.common.tile;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockSkillet;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipe;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipeManager;
+import com.wdcftgg.farmersdelightlegacy.common.util.HeatSourceHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.init.Enchantments;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -33,6 +35,8 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
         if (this.world == null || this.world.isRemote) {
             return;
         }
+
+        updateSupportState();
 
         if (isHeated()) {
             ItemStack stored = getStoredStack();
@@ -131,13 +135,19 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
     }
 
     private boolean isHeated() {
-        if (this.world == null) {
-            return false;
+        return HeatSourceHelper.isDirectHeatSource(this.world, this.pos.down());
+    }
+
+    private void updateSupportState() {
+        IBlockState state = this.world.getBlockState(this.pos);
+        if (!(state.getBlock() instanceof BlockSkillet)) {
+            return;
         }
-        if (!this.world.isBlockLoaded(this.pos.down())) {
-            return false;
+
+        boolean support = HeatSourceHelper.isVisualSupportHeatSource(this.world, this.pos.down());
+        if (state.getValue(BlockSkillet.SUPPORT) != support) {
+            this.world.setBlockState(this.pos, state.withProperty(BlockSkillet.SUPPORT, support), 2);
         }
-        return this.world.getBlockState(this.pos).getValue(BlockSkillet.SUPPORT);
     }
 
     @Override

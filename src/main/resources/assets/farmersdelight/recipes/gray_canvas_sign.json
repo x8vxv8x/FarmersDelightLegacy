@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "fd_canvas_sign",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "fdCanvasSigns"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dyeGray"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:gray_canvas_sign"
+  }
+}

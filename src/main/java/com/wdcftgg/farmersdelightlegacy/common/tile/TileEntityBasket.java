@@ -1,10 +1,10 @@
 package com.wdcftgg.farmersdelightlegacy.common.tile;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockBasket;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -323,7 +323,7 @@ public class TileEntityBasket extends TileEntity implements IInventory, ITickabl
 
     @Override
     public String getName() {
-        return hasCustomName() ? this.customName : Tags.MOD_ID + ".container.basket";
+        return hasCustomName() ? this.customName : FarmersDelightLegacy.MOD_ID + ".container.basket";
     }
 
     @Override

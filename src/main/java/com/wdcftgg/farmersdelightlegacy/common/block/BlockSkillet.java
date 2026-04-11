@@ -2,7 +2,6 @@ package com.wdcftgg.farmersdelightlegacy.common.block;
 
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModSounds;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntitySkillet;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -11,17 +10,10 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -79,14 +71,7 @@ public class BlockSkillet extends BlockHorizontal implements ITileEntityProvider
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, net.minecraft.entity.EntityLivingBase placer) {
         return this.getDefaultState()
                 .withProperty(FACING, placer.getHorizontalFacing())
-                .withProperty(SUPPORT, getTrayState(worldIn, pos));
-    }
-
-    @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        if (fromPos.getY() == pos.getY() - 1 || fromPos.getY() == pos.getY() + 1) {
-            worldIn.setBlockState(pos, state.withProperty(SUPPORT, getTrayState(worldIn, pos)), 2);
-        }
+                .withProperty(SUPPORT, false);
     }
 
     @Override
@@ -123,7 +108,7 @@ public class BlockSkillet extends BlockHorizontal implements ITileEntityProvider
         if (tileEntity instanceof TileEntitySkillet) {
             ItemStack stored = ((TileEntitySkillet) tileEntity).getStoredStack();
             if (!stored.isEmpty()) {
-                net.minecraft.inventory.InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stored);
+                InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stored);
             }
         }
         super.breakBlock(worldIn, pos, state);
@@ -200,13 +185,6 @@ public class BlockSkillet extends BlockHorizontal implements ITileEntityProvider
         return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
-    private boolean getTrayState(World world, BlockPos pos) {
-        IBlockState stateBelow = world.getBlockState(pos.down());
-        Block blockBelow = stateBelow.getBlock();
-        return blockBelow == Blocks.FIRE
-                || blockBelow == Blocks.LAVA
-                || blockBelow == Blocks.FLOWING_LAVA;
-    }
 
     public static int getSkilletCookingTime(int originalCookingTime, int fireAspectLevel) {
         int cookingTime = originalCookingTime > 0 ? originalCookingTime : 600;

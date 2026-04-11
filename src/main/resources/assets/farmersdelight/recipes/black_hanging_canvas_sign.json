@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "fd_hanging_canvas_sign",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "fdHangingCanvasSigns"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dyeBlack"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:black_hanging_canvas_sign"
+  }
+}

@@ -194,6 +194,7 @@ farmersdelight.item.skillet.how_to_cook=Use sua outra mão para segurar ingredie
 farmersdelight.item.skillet.underwater=Não dá para cozinhar embaixo d'água...
 farmersdelight.jei.chance=%1$s%% de chance
 farmersdelight.jei.cooking=Panela
+farmersdelight.jei.campfire=Culinária na fogueira
 farmersdelight.jei.cutting=Tábua de corte
 farmersdelight.jei.decomposition=Decomposição
 farmersdelight.jei.decomposition.accelerators=Acelerado por ativadores ao redor (veja abaixo)
@@ -321,3 +322,5 @@ item.farmersdelight.vegetable_noodles.name=Macarrão com legumes
 item.farmersdelight.vegetable_soup.name=Sopa de legumes
 item.farmersdelight.wheat_dough.name=Massa de trigo
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Fatia de torta de abobora

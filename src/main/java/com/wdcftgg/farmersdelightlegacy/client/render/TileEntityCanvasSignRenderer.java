@@ -1,7 +1,9 @@
 package com.wdcftgg.farmersdelightlegacy.client.render;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import com.wdcftgg.farmersdelightlegacy.common.block.BlockCanvasHangingSign;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockCanvasStandingSign;
+import com.wdcftgg.farmersdelightlegacy.common.block.BlockCanvasWallHangingSign;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockCanvasWallSign;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCanvasSign;
 import net.minecraft.block.Block;
@@ -12,19 +14,26 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.opengl.GL11;
 
 public class TileEntityCanvasSignRenderer extends TileEntitySpecialRenderer<TileEntityCanvasSign> {
 
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(Tags.MOD_ID, "textures/entity/signs/canvas.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(FarmersDelightLegacy.MOD_ID, "textures/entity/signs/canvas.png");
+    private static final float HANGING_TEXT_SCALE = 0.0125F;
+    private static final float STANDING_TEXT_SCALE = 0.010416667F;
     private final ModelSign signModel = new ModelSign();
+    private final ModelCanvasHangingSign hangingSignModel = new ModelCanvasHangingSign();
 
     @Override
     public void render(TileEntityCanvasSign te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         IBlockState state = te.hasWorld() ? te.getWorld().getBlockState(te.getPos()) : null;
         Block block = state != null ? state.getBlock() : null;
+        boolean hangingSign = block instanceof BlockCanvasHangingSign;
+        boolean wallHangingSign = block instanceof BlockCanvasWallHangingSign;
+        boolean anyHangingSign = hangingSign || wallHangingSign;
 
         GlStateManager.pushMatrix();
         float rotation = 0.0F;
@@ -33,18 +42,31 @@ public class TileEntityCanvasSignRenderer extends TileEntitySpecialRenderer<Tile
                 rotation = -state.getValue(BlockStandingSign.ROTATION) * 360.0F / 16.0F;
             }
             signModel.signStick.showModel = true;
-            GlStateManager.translate(x + 0.5D, y + 0.75D, z + 0.5D);
+            GlStateManager.translate(x + 0.5D, y + 0.5D, z + 0.5D);
+        } else if (hangingSign) {
+            rotation = -state.getValue(BlockCanvasHangingSign.ROTATION) * 360.0F / 16.0F;
+            GlStateManager.translate(x + 0.5D, y + 0.9375D, z + 0.5D);
+            GlStateManager.translate(0.0F, -0.3125F, 0.0F);
+        } else if (wallHangingSign) {
+            EnumFacing facing = state.getValue(BlockCanvasWallHangingSign.FACING);
+            EnumFacing attachedFace = facing.getOpposite();
+            rotation = -attachedFace.getHorizontalAngle() - 90.0F;
+            GlStateManager.translate(x + 0.5D, y + 0.9375D, z + 0.5D);
+            GlStateManager.translate(0.0F, -0.3125F, 0.0F);
         } else {
             if (block instanceof BlockCanvasWallSign) {
                 switch (state.getValue(BlockWallSign.FACING)) {
                     case NORTH:
                         rotation = 180.0F;
+                        GlStateManager.translate(0, 0, (float) 14 / 16);
                         break;
                     case WEST:
-                        rotation = 90.0F;
+                        rotation = -90.0F;
+                        GlStateManager.translate((float) 7 / 16, 0, (float) 7 / 16);
                         break;
                     case EAST:
-                        rotation = -90.0F;
+                        rotation = 90.0F;
+                        GlStateManager.translate((float) -7 / 16, 0, (float) 7 / 16);
                         break;
                     default:
                         rotation = 0.0F;
@@ -52,7 +74,7 @@ public class TileEntityCanvasSignRenderer extends TileEntitySpecialRenderer<Tile
                 }
             }
             signModel.signStick.showModel = false;
-            GlStateManager.translate(x + 0.5D, y + 0.75D, z + 0.5D);
+            GlStateManager.translate(x + 0.5D, y + 0.5D, z + 0.5D);
             GlStateManager.translate(0.0F, -0.3125F, -0.4375F);
         }
 
@@ -60,11 +82,20 @@ public class TileEntityCanvasSignRenderer extends TileEntitySpecialRenderer<Tile
         bindTexture(resolveTexture(block));
 
         GlStateManager.pushMatrix();
-        GlStateManager.scale(0.6666667F, -0.6666667F, -0.6666667F);
-        signModel.renderSign();
+        if (anyHangingSign) {
+            GlStateManager.scale(1.0F, -1.0F, -1.0F);
+            if (wallHangingSign) {
+                hangingSignModel.renderWall(0.0625F);
+            } else {
+                hangingSignModel.renderCeiling(false, 0.0625F);
+            }
+        } else {
+            GlStateManager.scale(0.6666667F, -0.6666667F, -0.6666667F);
+            signModel.renderSign();
+        }
         GlStateManager.popMatrix();
 
-        renderSignText(te);
+        renderSignText(te, anyHangingSign);
         GlStateManager.popMatrix();
     }
 
@@ -75,14 +106,29 @@ public class TileEntityCanvasSignRenderer extends TileEntitySpecialRenderer<Tile
         if (block instanceof BlockCanvasWallSign) {
             return ((BlockCanvasWallSign) block).getTextureLocation();
         }
+        if (block instanceof BlockCanvasHangingSign) {
+            return ((BlockCanvasHangingSign) block).getTextureLocation();
+        }
+        if (block instanceof BlockCanvasWallHangingSign) {
+            return ((BlockCanvasWallHangingSign) block).getTextureLocation();
+        }
         return DEFAULT_TEXTURE;
     }
 
-    private void renderSignText(TileEntityCanvasSign te) {
+    private void renderSignText(TileEntityCanvasSign te, boolean hangingSign) {
         FontRenderer fontRenderer = this.getFontRenderer();
-        GlStateManager.translate(0.0F, 0.33333334F, 0.046666667F);
-        GlStateManager.scale(0.010416667F, -0.010416667F, 0.010416667F);
-        GlStateManager.glNormal3f(0.0F, 0.0F, -0.010416667F);
+        if (hangingSign && te.isHangingTextOnBack()) {
+            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+        }
+        if (hangingSign) {
+            GlStateManager.translate(0.0F, -0.32F, 0.073F);
+            GlStateManager.scale(HANGING_TEXT_SCALE, -HANGING_TEXT_SCALE, HANGING_TEXT_SCALE);
+            GlStateManager.glNormal3f(0.0F, 0.0F, -HANGING_TEXT_SCALE);
+        } else {
+            GlStateManager.translate(0.0F, 0.33333334F, 0.046666667F);
+            GlStateManager.scale(STANDING_TEXT_SCALE, -STANDING_TEXT_SCALE, STANDING_TEXT_SCALE);
+            GlStateManager.glNormal3f(0.0F, 0.0F, -STANDING_TEXT_SCALE);
+        }
         GlStateManager.depthMask(false);
 
         for (int line = 0; line < te.signText.length; ++line) {
@@ -100,4 +146,6 @@ public class TileEntityCanvasSignRenderer extends TileEntitySpecialRenderer<Tile
         GL11.glNormal3f(0.0F, 0.0F, -1.0F);
     }
 }
+
+
 

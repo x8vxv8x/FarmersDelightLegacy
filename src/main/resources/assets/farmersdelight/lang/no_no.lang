@@ -127,6 +127,7 @@ farmersdelight.container.cooking_pot.served_on=Serveres på/i: %s
 farmersdelight.item.skillet.how_to_cook=Bruk den andre hånden til å holde ingrediensene!
 farmersdelight.jei.chance=%1$s%% sjangse
 farmersdelight.jei.cooking=Matlaging
+farmersdelight.jei.campfire=Bålkoking
 farmersdelight.jei.cutting=Skjærebrett
 farmersdelight.jei.decomposition=Nedbrytning
 farmersdelight.jei.decomposition.accelerators=Fremskyndet av nærliggende aktivatorer (se nedenfor)
@@ -234,3 +235,5 @@ item.farmersdelight.vegetable_noodles.name=Grønnsaksnuddler
 item.farmersdelight.vegetable_soup.name=Grønnsakssuppe
 item.farmersdelight.wheat_dough.name=Hvetedeig
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Skive gresskarpai

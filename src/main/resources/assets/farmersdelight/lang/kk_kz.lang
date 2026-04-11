@@ -194,6 +194,7 @@ farmersdelight.item.skillet.how_to_cook=Екінші қолыңа ингреди
 farmersdelight.item.skillet.underwater=Су астында пісіре алмайсың...
 farmersdelight.jei.chance=Ықтималдылығы %1$s%%
 farmersdelight.jei.cooking=Пісіру
+farmersdelight.jei.campfire=Алау үстінде пісіру
 farmersdelight.jei.cutting=Турау
 farmersdelight.jei.decomposition=Ыдырау
 farmersdelight.jei.decomposition.accelerators=Белсендіргіш қолдану жеделдетеді (төменде қара)
@@ -321,3 +322,5 @@ item.farmersdelight.vegetable_noodles.name=Көкөністі кеспе
 item.farmersdelight.vegetable_soup.name=Көкөніс сорпа
 item.farmersdelight.wheat_dough.name=Қамыр
 itemGroup.farmersdelight=Фермердің қуанышы
+
+item.farmersdelight.pumpkin_pie_slice.name=Asqabaq pirogynyng tilimi

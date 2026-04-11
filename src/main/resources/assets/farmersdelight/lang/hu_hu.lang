@@ -194,6 +194,7 @@ farmersdelight.item.skillet.how_to_cook=Használd a másik kezed, hogy tartsd az
 farmersdelight.item.skillet.underwater=Nem tudsz főzni a víz alatt...
 farmersdelight.jei.chance=%1$s%% esély
 farmersdelight.jei.cooking=Főzés
+farmersdelight.jei.campfire=Tábortűzi főzés
 farmersdelight.jei.cutting=Vágódeszka
 farmersdelight.jei.decomposition=Bontás
 farmersdelight.jei.decomposition.accelerators=Aktivátorok hatására gyorsul (lsd. lejjebb)
@@ -321,3 +322,5 @@ item.farmersdelight.vegetable_noodles.name=Zöldséges tészta
 item.farmersdelight.vegetable_soup.name=Zöldségleves
 item.farmersdelight.wheat_dough.name=Búzatészta
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Tokos piteszelet

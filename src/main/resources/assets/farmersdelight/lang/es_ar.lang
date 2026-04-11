@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Mostrando lo cocinable
 farmersdelight.item.skillet.how_to_cook=¡Usá tu otra mano para sostener los ingredientes!
 farmersdelight.jei.chance=%1$s%% de probabilidad
 farmersdelight.jei.cooking=Cocinando
+farmersdelight.jei.campfire=Cocina en fogata
 farmersdelight.jei.cutting=Picando
 farmersdelight.jei.decomposition=Descomposición
 farmersdelight.jei.decomposition.accelerators=Acelerado por activadores adyacentes (ver más abajo)
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=Fideos de verduras
 item.farmersdelight.vegetable_soup.name=Sopa de vegetales
 item.farmersdelight.wheat_dough.name=Masa de trigo
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Rebanada de pastel de calabaza

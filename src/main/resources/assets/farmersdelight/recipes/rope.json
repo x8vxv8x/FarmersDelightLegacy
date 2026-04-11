@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "fd_rope",
+  "pattern": [
+    "s",
+    "s"
+  ],
+  "key": {
+    "s": {
+      "item": "farmersdelight:straw"
+    }
+  },
+  "result": {
+    "item": "farmersdelight:rope",
+    "count": 4
+  }
+}

@@ -1,22 +1,13 @@
 package com.wdcftgg.farmersdelightlegacy.common.registry;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.ModCreativeTab;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemSeeds;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class ModItems {
 
@@ -28,7 +19,7 @@ public final class ModItems {
             "chicken_soup", "chocolate_pie", "chocolate_pie_slice", "cod_roll", "cod_slice", "cooked_bacon",
             "cooked_chicken_cuts", "cooked_cod_slice", "cooked_mutton_chops", "cooked_rice", "cooked_salmon_slice", "cooking_pot",
             "cyan_canvas_sign", "cyan_hanging_canvas_sign", "diamond_knife", "dog_food", "dumplings", "egg_sandwich",
-            "empty_container_slot_bowl", "fish_stew", "flint_knife", "fried_egg", "fried_rice", "fruit_salad", "full_tatami_mat",
+            "fish_stew", "flint_knife", "fried_egg", "fried_rice", "fruit_salad", "full_tatami_mat",
             "glow_berry_custard", "golden_knife", "gray_canvas_sign", "gray_hanging_canvas_sign", "green_canvas_sign",
             "green_hanging_canvas_sign", "grilled_salmon", "half_tatami_mat", "ham", "hamburger", "hanging_canvas_sign",
             "honey_cookie", "honey_glazed_ham", "honey_glazed_ham_block", "horse_feed", "hot_cocoa", "iron_knife", "kelp_roll",
@@ -136,8 +127,8 @@ public final class ModItems {
     }
 
     private static Item register(String path, Item item) {
-        item.setRegistryName(new ResourceLocation(Tags.MOD_ID, path));
-        item.setTranslationKey(Tags.MOD_ID + "." + path);
+        item.setRegistryName(new ResourceLocation(FarmersDelightLegacy.MOD_ID, path));
+        item.setTranslationKey(FarmersDelightLegacy.MOD_ID + "." + path);
         item.setCreativeTab(ModCreativeTab.TAB);
         ITEMS.put(path, item);
         return item;

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "listAllEgg"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "listAllEgg"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:egg_sandwich"
+  }
+}

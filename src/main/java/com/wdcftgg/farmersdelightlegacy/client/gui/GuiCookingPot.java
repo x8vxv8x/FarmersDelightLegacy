@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.client.gui;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.inventory.ContainerCookingPot;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCookingPot;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiCookingPot extends GuiContainer {
 
-    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Tags.MOD_ID, "textures/gui/cooking_pot.png");
+    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(FarmersDelightLegacy.MOD_ID, "textures/gui/cooking_pot.png");
     private static final int HEAT_X = 47;
     private static final int HEAT_Y = 55;
     private static final int HEAT_W = 17;

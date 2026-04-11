@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Доступні для приго
 farmersdelight.item.skillet.how_to_cook=Використовуйте іншу руку, щоб притримувати інгредієнти!
 farmersdelight.jei.chance=%1$s%% шанс
 farmersdelight.jei.cooking=Готування
+farmersdelight.jei.campfire=Готування на багатті
 farmersdelight.jei.cutting=Нарізна дошка
 farmersdelight.jei.decomposition=Розкладання
 farmersdelight.jei.decomposition.accelerators=Пришвидшується прилеглими активаторами (див. нижче)
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=Овочева локшина
 item.farmersdelight.vegetable_soup.name=Овочевий суп
 item.farmersdelight.wheat_dough.name=Пшеничне тісто
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Скибка гарбузового пирога

@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Kochbares wird angezeigt
 farmersdelight.item.skillet.how_to_cook=Benutze deine andere Hand um Zutaten zu halten!
 farmersdelight.jei.chance=%1$s%% Chance
 farmersdelight.jei.cooking=Kochen
+farmersdelight.jei.campfire=Lagerfeuerkochen
 farmersdelight.jei.cutting=Schneidebrett
 farmersdelight.jei.decomposition=Kompostierung
 farmersdelight.jei.decomposition.accelerators=Beschleunigt durch benachbarte Aktivatoren (siehe unten)
@@ -284,3 +285,5 @@ item.farmersdelight.vegetable_noodles.name=Gemüsenudeln
 item.farmersdelight.vegetable_soup.name=Gemüsesuppe
 item.farmersdelight.wheat_dough.name=Teigball
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Stueck Kuerbiskuchen

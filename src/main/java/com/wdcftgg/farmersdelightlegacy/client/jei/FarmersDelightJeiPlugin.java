@@ -1,11 +1,7 @@
 package com.wdcftgg.farmersdelightlegacy.client.jei;
 
 import com.wdcftgg.farmersdelightlegacy.client.gui.GuiCookingPot;
-import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipe;
-import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipeManager;
-import com.wdcftgg.farmersdelightlegacy.common.recipe.CookingPotRecipe;
-import com.wdcftgg.farmersdelightlegacy.common.recipe.CookingPotRecipeManager;
-import com.wdcftgg.farmersdelightlegacy.common.recipe.CuttingBoardRecipeManager;
+import com.wdcftgg.farmersdelightlegacy.common.recipe.*;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
 import mezz.jei.api.IGuiHelper;
@@ -15,6 +11,7 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -51,24 +48,69 @@ public final class FarmersDelightJeiPlugin implements IModPlugin {
 
         registry.addRecipeClickArea(GuiCookingPot.class, 89, 25, 24, 17, JeiUids.COOKING_POT);
 
-        addIngredientInfo(registry, "wheat_dough", "farmersdelight.jei.info.dough");
-        addIngredientInfo(registry, "straw", "farmersdelight.jei.info.straw");
-        addIngredientInfo(registry, "ham", "farmersdelight.jei.info.ham");
-        addIngredientInfo(registry, "smoked_ham", "farmersdelight.jei.info.ham");
-        addIngredientInfo(registry, "flint_knife", "farmersdelight.jei.info.knife");
-        addIngredientInfo(registry, "iron_knife", "farmersdelight.jei.info.knife");
-        addIngredientInfo(registry, "golden_knife", "farmersdelight.jei.info.knife");
-        addIngredientInfo(registry, "diamond_knife", "farmersdelight.jei.info.knife");
-        addIngredientInfo(registry, "netherite_knife", "farmersdelight.jei.info.knife");
-        addIngredientInfo(registry, "stove", "farmersdelight.jei.info.stove");
-        addIngredientInfo(registry, "skillet", "farmersdelight.jei.info.skillet");
+        addIngredientInfoItem(registry, "wheat_dough", "farmersdelight.jei.info.dough");
+        addIngredientInfoItem(registry, "straw", "farmersdelight.jei.info.straw");
+        addIngredientInfoItem(registry, "ham", "farmersdelight.jei.info.ham");
+        addIngredientInfoItem(registry, "smoked_ham", "farmersdelight.jei.info.ham");
+        addIngredientInfoItem(registry, "flint_knife", "farmersdelight.jei.info.knife");
+        addIngredientInfoItem(registry, "iron_knife", "farmersdelight.jei.info.knife");
+        addIngredientInfoItem(registry, "golden_knife", "farmersdelight.jei.info.knife");
+        addIngredientInfoItem(registry, "diamond_knife", "farmersdelight.jei.info.knife");
+        registerCropIngredientInfos(registry);
     }
 
-    private static void addIngredientInfo(IModRegistry registry, String itemName, String key) {
-        Item item = ModItems.ITEMS.get(itemName);
-        if (item != null) {
-            registry.addIngredientInfo(new ItemStack(item), VanillaTypes.ITEM, key);
+    private static void addIngredientInfo(IModRegistry registry, ItemStack stack, String key) {
+        if (!stack.isEmpty()) {
+            registry.addIngredientInfo(stack, VanillaTypes.ITEM, key);
         }
+    }
+
+    private static void addIngredientInfoGroup(IModRegistry registry, String key, ItemStack... stacks) {
+        List<ItemStack> validStacks = new ArrayList<>();
+        for (ItemStack stack : stacks) {
+            if (!stack.isEmpty()) {
+                validStacks.add(stack);
+            }
+        }
+
+        if (!validStacks.isEmpty()) {
+            registry.addIngredientInfo(validStacks, VanillaTypes.ITEM, key);
+        }
+    }
+
+    private static void registerCropIngredientInfos(IModRegistry registry) {
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_beetroots",
+                new ItemStack(Items.BEETROOT),
+                new ItemStack(ModBlocks.WILD_BEETROOTS));
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_cabbages",
+                stackFromItemName("cabbage"),
+                stackFromItemName("cabbage_leaf"),
+                new ItemStack(ModBlocks.WILD_CABBAGES));
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_carrots",
+                new ItemStack(Items.CARROT),
+                new ItemStack(ModBlocks.WILD_CARROTS));
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_onions",
+                stackFromItemName("onion"),
+                new ItemStack(ModBlocks.WILD_ONIONS));
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_potatoes",
+                new ItemStack(Items.POTATO),
+                new ItemStack(ModBlocks.WILD_POTATOES));
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_rice",
+                stackFromItemName("rice"),
+                stackFromItemName("rice_panicle"),
+                new ItemStack(ModBlocks.WILD_RICE));
+        addIngredientInfoGroup(registry, "farmersdelight.jei.info.wild_tomatoes",
+                stackFromItemName("tomato"),
+                new ItemStack(ModBlocks.WILD_TOMATOES));
+    }
+
+    private static ItemStack stackFromItemName(String itemName) {
+        Item item = ModItems.ITEMS.get(itemName);
+        return item != null ? new ItemStack(item) : ItemStack.EMPTY;
+    }
+
+    private static void addIngredientInfoItem(IModRegistry registry, String itemName, String key) {
+        addIngredientInfo(registry, stackFromItemName(itemName), key);
     }
 
     private static List<CookingPotJeiRecipe> buildCookingPotRecipes() {

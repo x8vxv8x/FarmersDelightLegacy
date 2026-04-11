@@ -1,11 +1,11 @@
 package com.wdcftgg.farmersdelightlegacy.common.recipe;
 
-import com.wdcftgg.farmersdelight.Tags;
-import com.wdcftgg.farmersdelightlegacy.common.registry.ModOreDictionary;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import com.wdcftgg.farmersdelightlegacy.common.registry.ModOreDictionary;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -17,11 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public final class CuttingBoardRecipeManager {
 
@@ -242,6 +238,11 @@ public final class CuttingBoardRecipeManager {
             count = Math.max(1, resultObject.get("count").getAsInt());
         }
 
+        int metadata = 0;
+        if (resultObject.has("data")) {
+            metadata = Math.max(0, resultObject.get("data").getAsInt());
+        }
+
         float chance = 1.0F;
         if (resultObject.has("chance")) {
             chance = clampChance((float) resultObject.get("chance").getAsDouble());
@@ -249,7 +250,7 @@ public final class CuttingBoardRecipeManager {
             chance = clampChance((float) resultObject.get("probability").getAsDouble());
         }
 
-        return new ResultEntry(new ItemStack(resultItem, count), chance);
+        return new ResultEntry(new ItemStack(resultItem, count, metadata), chance);
     }
 
     private static float clampChance(float chance) {
@@ -329,16 +330,16 @@ public final class CuttingBoardRecipeManager {
 
     private static final class IngredientMatcher {
 
-        private final List<Item> items;
+        private final List<ItemStack> itemStacks;
         private final List<String> oreDictNames;
 
-        private IngredientMatcher(List<Item> items, List<String> oreDictNames) {
-            this.items = items;
+        private IngredientMatcher(List<ItemStack> itemStacks, List<String> oreDictNames) {
+            this.itemStacks = itemStacks;
             this.oreDictNames = oreDictNames;
         }
 
         private static IngredientMatcher invalid() {
-            return new IngredientMatcher(Collections.<Item>emptyList(), Collections.<String>emptyList());
+            return new IngredientMatcher(Collections.<ItemStack>emptyList(), Collections.<String>emptyList());
         }
 
         private static IngredientMatcher fromToken(String token) {
@@ -346,10 +347,10 @@ public final class CuttingBoardRecipeManager {
                 return invalid();
             }
 
-            List<Item> items = new ArrayList<>();
+            List<ItemStack> itemStacks = new ArrayList<>();
             List<String> oreDictNames = new ArrayList<>();
-            addToken(token, items, oreDictNames);
-            return new IngredientMatcher(items, oreDictNames);
+            addToken(token, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
+            return new IngredientMatcher(itemStacks, oreDictNames);
         }
 
         private static IngredientMatcher fromJson(JsonElement element) {
@@ -357,26 +358,26 @@ public final class CuttingBoardRecipeManager {
                 return invalid();
             }
 
-            List<Item> items = new ArrayList<>();
+            List<ItemStack> itemStacks = new ArrayList<>();
             List<String> oreDictNames = new ArrayList<>();
-            collectTokens(element, items, oreDictNames);
-            return new IngredientMatcher(items, oreDictNames);
+            collectTokens(element, itemStacks, oreDictNames);
+            return new IngredientMatcher(itemStacks, oreDictNames);
         }
 
-        private static void collectTokens(JsonElement element, List<Item> items, List<String> oreDictNames) {
+        private static void collectTokens(JsonElement element, List<ItemStack> itemStacks, List<String> oreDictNames) {
             if (element == null || element.isJsonNull()) {
                 return;
             }
 
             if (element.isJsonPrimitive()) {
-                addToken(element.getAsString(), items, oreDictNames);
+                addToken(element.getAsString(), OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
                 return;
             }
 
             if (element.isJsonArray()) {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement child : array) {
-                    collectTokens(child, items, oreDictNames);
+                    collectTokens(child, itemStacks, oreDictNames);
                 }
                 return;
             }
@@ -387,23 +388,27 @@ public final class CuttingBoardRecipeManager {
 
             JsonObject jsonObject = element.getAsJsonObject();
             if (jsonObject.has("item") && jsonObject.get("item").isJsonPrimitive()) {
-                addToken(jsonObject.get("item").getAsString(), items, oreDictNames);
+                int metadata = OreDictionary.WILDCARD_VALUE;
+                if (jsonObject.has("data") && jsonObject.get("data").isJsonPrimitive()) {
+                    metadata = Math.max(0, jsonObject.get("data").getAsInt());
+                }
+                addToken(jsonObject.get("item").getAsString(), metadata, itemStacks, oreDictNames);
             }
             if (jsonObject.has("tag") && jsonObject.get("tag").isJsonPrimitive()) {
                 String oreToken = tagToOreToken(jsonObject.get("tag").getAsString());
                 if (oreToken != null) {
-                    addToken(oreToken, items, oreDictNames);
+                    addToken(oreToken, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
                 }
             }
             if (jsonObject.has("action") && jsonObject.get("action").isJsonPrimitive()) {
                 String actionToken = actionToOreToken(jsonObject.get("action").getAsString());
                 if (actionToken != null) {
-                    addToken(actionToken, items, oreDictNames);
+                    addToken(actionToken, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
                 }
             }
         }
 
-        private static void addToken(String token, List<Item> items, List<String> oreDictNames) {
+        private static void addToken(String token, int metadata, List<ItemStack> itemStacks, List<String> oreDictNames) {
             if (token == null || token.isEmpty()) {
                 return;
             }
@@ -417,21 +422,31 @@ public final class CuttingBoardRecipeManager {
             }
 
             Item item = itemOf(token);
-            if (item != null && !items.contains(item)) {
-                items.add(item);
+            if (item != null) {
+                for (ItemStack candidate : itemStacks) {
+                    if (candidate.getItem() == item && candidate.getMetadata() == metadata) {
+                        return;
+                    }
+                }
+                itemStacks.add(new ItemStack(item, 1, metadata));
             }
         }
 
         private boolean isValid() {
-            return !items.isEmpty() || !oreDictNames.isEmpty();
+            return !itemStacks.isEmpty() || !oreDictNames.isEmpty();
         }
 
         private boolean matches(ItemStack stack) {
             if (stack.isEmpty()) {
                 return false;
             }
-            if (items.contains(stack.getItem())) {
-                return true;
+            for (ItemStack candidate : itemStacks) {
+                if (candidate.getItem() == stack.getItem()) {
+                    int candidateMeta = candidate.getMetadata();
+                    if (candidateMeta == OreDictionary.WILDCARD_VALUE || candidateMeta == stack.getMetadata()) {
+                        return true;
+                    }
+                }
             }
             if (oreDictNames.isEmpty()) {
                 return false;
@@ -454,8 +469,13 @@ public final class CuttingBoardRecipeManager {
 
         private List<ItemStack> asStacks() {
             List<ItemStack> result = new ArrayList<>();
-            for (Item item : items) {
-                result.add(new ItemStack(item));
+            for (ItemStack itemStack : itemStacks) {
+                int metadata = itemStack.getMetadata();
+                if (metadata == OreDictionary.WILDCARD_VALUE) {
+                    result.add(new ItemStack(itemStack.getItem()));
+                } else {
+                    result.add(itemStack.copy());
+                }
             }
             for (String oreName : oreDictNames) {
                 for (ItemStack oreStack : OreDictionary.getOres(oreName)) {
@@ -503,7 +523,7 @@ public final class CuttingBoardRecipeManager {
         if (path.contains(":")) {
             itemId = new ResourceLocation(path);
         } else {
-            itemId = new ResourceLocation(Tags.MOD_ID, path);
+            itemId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, path);
         }
         return ForgeRegistries.ITEMS.getValue(itemId);
     }

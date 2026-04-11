@@ -11,38 +11,75 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 public class BlockBasket extends BlockDirectional implements ITileEntityProvider {
 
     public static final PropertyBool ENABLED = PropertyBool.create("enabled");
-    private static final Map<EnumFacing, AxisAlignedBB> SHAPE_BY_FACING = new EnumMap<>(EnumFacing.class);
+    private static final AxisAlignedBB RENDER_SHAPE = new AxisAlignedBB(0.0625D, 0.0625D, 0.0625D, 0.9375D, 0.9375D, 0.9375D);
+    private static final Map<EnumFacing, AxisAlignedBB[]> COLLISION_SHAPE_BY_FACING = new EnumMap<>(EnumFacing.class);
 
     static {
-        SHAPE_BY_FACING.put(EnumFacing.DOWN, new AxisAlignedBB(0.125D, 0.0D, 0.125D, 0.875D, 0.875D, 0.875D));
-        SHAPE_BY_FACING.put(EnumFacing.UP, new AxisAlignedBB(0.125D, 0.125D, 0.125D, 0.875D, 1.0D, 0.875D));
-        SHAPE_BY_FACING.put(EnumFacing.NORTH, new AxisAlignedBB(0.125D, 0.125D, 0.0D, 0.875D, 0.875D, 0.875D));
-        SHAPE_BY_FACING.put(EnumFacing.SOUTH, new AxisAlignedBB(0.125D, 0.125D, 0.125D, 0.875D, 0.875D, 1.0D));
-        SHAPE_BY_FACING.put(EnumFacing.WEST, new AxisAlignedBB(0.0D, 0.125D, 0.125D, 0.875D, 0.875D, 0.875D));
-        SHAPE_BY_FACING.put(EnumFacing.EAST, new AxisAlignedBB(0.125D, 0.125D, 0.125D, 1.0D, 0.875D, 0.875D));
+        COLLISION_SHAPE_BY_FACING.put(EnumFacing.UP, new AxisAlignedBB[]{
+                new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.0D, 0.125D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.875D, 0.125D, 0.0D, 1.0D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.125D, 0.125D, 0.0D, 0.875D, 1.0D, 0.125D),
+                new AxisAlignedBB(0.125D, 0.125D, 0.875D, 0.875D, 1.0D, 1.0D)
+        });
+        COLLISION_SHAPE_BY_FACING.put(EnumFacing.DOWN, new AxisAlignedBB[]{
+                new AxisAlignedBB(0.0D, 0.875D, 0.0D, 1.0D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.125D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.875D, 0.0D, 0.0D, 1.0D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 0.875D, 0.125D),
+                new AxisAlignedBB(0.125D, 0.0D, 0.875D, 0.875D, 0.875D, 1.0D)
+        });
+        COLLISION_SHAPE_BY_FACING.put(EnumFacing.NORTH, new AxisAlignedBB[]{
+                new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.875D, 0.0D, 1.0D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.0D, 0.125D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.875D, 0.125D, 0.0D, 1.0D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.125D, 0.125D, 0.875D, 0.875D, 0.875D, 1.0D)
+        });
+        COLLISION_SHAPE_BY_FACING.put(EnumFacing.SOUTH, new AxisAlignedBB[]{
+                new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.875D, 0.0D, 1.0D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.0D, 0.125D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.875D, 0.125D, 0.0D, 1.0D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.125D, 0.125D, 0.0D, 0.875D, 0.875D, 0.125D)
+        });
+        COLLISION_SHAPE_BY_FACING.put(EnumFacing.WEST, new AxisAlignedBB[]{
+                new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.875D, 0.0D, 1.0D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.0D, 1.0D, 0.875D, 0.125D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.875D, 1.0D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.875D, 0.125D, 0.125D, 1.0D, 0.875D, 0.875D)
+        });
+        COLLISION_SHAPE_BY_FACING.put(EnumFacing.EAST, new AxisAlignedBB[]{
+                new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.875D, 0.0D, 1.0D, 1.0D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.0D, 1.0D, 0.875D, 0.125D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.875D, 1.0D, 0.875D, 1.0D),
+                new AxisAlignedBB(0.0D, 0.125D, 0.125D, 0.125D, 0.875D, 0.875D)
+        });
     }
 
     public BlockBasket() {
@@ -65,12 +102,34 @@ public class BlockBasket extends BlockDirectional implements ITileEntityProvider
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return SHAPE_BY_FACING.get(state.getValue(FACING));
+        return RENDER_SHAPE;
+    }
+
+    @Override
+    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
+        return FULL_BLOCK_AABB.offset(pos);
     }
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        return SHAPE_BY_FACING.get(state.getValue(FACING));
+        return NULL_AABB;
+    }
+
+    @Override
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState) {
+        AxisAlignedBB[] collisionBoxes = COLLISION_SHAPE_BY_FACING.get(state.getValue(FACING));
+        if (collisionBoxes == null) {
+            return;
+        }
+        for (AxisAlignedBB collisionBox : collisionBoxes) {
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, collisionBox);
+        }
+    }
+
+    @Nullable
+    @Override
+    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+        return rayTrace(pos, start, end, FULL_BLOCK_AABB);
     }
 
     @Override

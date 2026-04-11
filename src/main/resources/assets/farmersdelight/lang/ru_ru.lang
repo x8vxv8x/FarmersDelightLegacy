@@ -194,6 +194,7 @@ farmersdelight.item.skillet.how_to_cook=Используйте другую ру
 farmersdelight.item.skillet.underwater=Нельзя готовить под водой...
 farmersdelight.jei.chance=%1$s%% шанс
 farmersdelight.jei.cooking=Готовка
+farmersdelight.jei.campfire=Готовка на костре
 farmersdelight.jei.cutting=Разделывание на доске
 farmersdelight.jei.decomposition=Разложение
 farmersdelight.jei.decomposition.accelerators=Процесс ускоряется посредством добавления активаторов (см. выше)
@@ -321,3 +322,5 @@ item.farmersdelight.vegetable_noodles.name=Овощная лапша
 item.farmersdelight.vegetable_soup.name=Овощной суп
 item.farmersdelight.wheat_dough.name=Пшеничное тесто
 itemGroup.farmersdelight=Фермерский Восторг
+
+item.farmersdelight.pumpkin_pie_slice.name=Ломтик тыквенного пирога

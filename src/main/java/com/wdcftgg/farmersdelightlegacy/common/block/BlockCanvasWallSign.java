@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCanvasSign;
 import net.minecraft.block.BlockWallSign;
 import net.minecraft.item.Item;
@@ -34,13 +34,13 @@ public class BlockCanvasWallSign extends BlockWallSign {
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, net.minecraft.block.state.IBlockState state) {
-        Item standingSignItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(Tags.MOD_ID, standingSignPath));
+        Item standingSignItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, standingSignPath));
         return standingSignItem == null ? ItemStack.EMPTY : new ItemStack(standingSignItem);
     }
 
     @Override
     public Item getItemDropped(net.minecraft.block.state.IBlockState state, Random rand, int fortune) {
-        Item standingSignItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(Tags.MOD_ID, standingSignPath));
+        Item standingSignItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, standingSignPath));
         return standingSignItem == null ? Item.getItemFromBlock(this) : standingSignItem;
     }
 }

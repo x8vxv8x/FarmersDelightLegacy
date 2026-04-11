@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -33,7 +33,7 @@ public class BlockPie extends Block {
 
     public BlockPie(String sliceItemPath) {
         super(Material.CAKE);
-        this.sliceItemId = new ResourceLocation(Tags.MOD_ID, sliceItemPath);
+        this.sliceItemId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, sliceItemPath);
         this.setHardness(0.5F);
         this.setResistance(0.5F);
         this.setSoundType(SoundType.CLOTH);

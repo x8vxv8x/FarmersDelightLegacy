@@ -194,6 +194,7 @@ farmersdelight.item.skillet.how_to_cook=Use your other hand to hold ingredients!
 farmersdelight.item.skillet.underwater=Can't cook underwater...
 farmersdelight.jei.chance=%1$s%% chance
 farmersdelight.jei.cooking=Cooking
+farmersdelight.jei.campfire=Campfire Cooking
 farmersdelight.jei.cutting=Cutting Board
 farmersdelight.jei.decomposition=Decomposition
 farmersdelight.jei.decomposition.accelerators=Sped up by adjacent activators (see below)
@@ -321,3 +322,5 @@ item.farmersdelight.vegetable_noodles.name=Vegetable Noodles
 item.farmersdelight.vegetable_soup.name=Vegetable Soup
 item.farmersdelight.wheat_dough.name=Wheat Dough
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Slice of Pumpkin Pie

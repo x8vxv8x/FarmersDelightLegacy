@@ -158,6 +158,7 @@ farmersdelight.container.recipe_book.cookable=Cuisinables
 farmersdelight.item.skillet.how_to_cook=Utilisez votre autre main pour tenir les ingrédients !
 farmersdelight.jei.chance=%1$s%% de chance
 farmersdelight.jei.cooking=Cuisine
+farmersdelight.jei.campfire=Cuisine au feu de camp
 farmersdelight.jei.cutting=Planche à découper
 farmersdelight.jei.decomposition=Décomposition
 farmersdelight.jei.decomposition.accelerators=Accéléré par les activateurs adjacents (voir ci-dessous)
@@ -277,3 +278,5 @@ item.farmersdelight.vegetable_noodles.name=Nouilles aux légumes
 item.farmersdelight.vegetable_soup.name=Soupe aux légumes
 item.farmersdelight.wheat_dough.name=Pâte de blé
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Part de tarte a la citrouille

@@ -45,10 +45,6 @@ public class ContainerCabinet extends Container {
         this.tileEntityCabinet.closeInventory(playerIn);
     }
 
-    public TileEntityCabinet getTileEntityCabinet() {
-        return this.tileEntityCabinet;
-    }
-
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
         ItemStack itemStack = ItemStack.EMPTY;

@@ -4,7 +4,6 @@ import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.gui.ModGuiHandler;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModSounds;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCookingPot;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -93,23 +92,7 @@ public class BlockCookingPot extends BlockContainer {
 
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return this.getDefaultState().withProperty(SUPPORT, getTrayState(worldIn, pos));
-    }
-
-    @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-        super.onBlockAdded(worldIn, pos, state);
-        boolean support = getTrayState(worldIn, pos);
-        if (support != state.getValue(SUPPORT)) {
-            worldIn.setBlockState(pos, state.withProperty(SUPPORT, support), 2);
-        }
-    }
-
-    @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        if (fromPos.getY() == pos.getY() - 1 || fromPos.getY() == pos.getY() + 1) {
-            worldIn.setBlockState(pos, state.withProperty(SUPPORT, getTrayState(worldIn, pos)), 2);
-        }
+        return this.getDefaultState().withProperty(SUPPORT, false);
     }
 
     @Override
@@ -137,7 +120,7 @@ public class BlockCookingPot extends BlockContainer {
         if (rand.nextInt(10) == 0) {
             worldIn.playSound(
                     pos.getX() + 0.5D,
-                    pos.getY(),
+                    pos.getY() + 1,
                     pos.getZ() + 0.5D,
                     cookingPot.hasCookedMeal() ? ModSounds.COOKING_POT_BOIL_SOUP : ModSounds.COOKING_POT_BOIL,
                     SoundCategory.BLOCKS,
@@ -163,12 +146,5 @@ public class BlockCookingPot extends BlockContainer {
         return state.getValue(SUPPORT) ? 1 : 0;
     }
 
-    private boolean getTrayState(World world, BlockPos pos) {
-        IBlockState stateBelow = world.getBlockState(pos.down());
-        Block blockBelow = stateBelow.getBlock();
-        return blockBelow == net.minecraft.init.Blocks.FIRE
-                || blockBelow == net.minecraft.init.Blocks.LAVA
-                || blockBelow == net.minecraft.init.Blocks.FLOWING_LAVA;
-    }
 }
 

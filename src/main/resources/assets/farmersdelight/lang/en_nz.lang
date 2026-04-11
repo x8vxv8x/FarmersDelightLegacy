@@ -5,3 +5,7 @@ tile.farmersdelight.light_gray_hanging_canvas_sign.name=Light Grey Hanging Canva
 farmersdelight.advancement.root.desc=A world of flavour awaits you!
 farmersdelight.jei.info.straw=A dry plant fibre used in crafting. Obtained by cutting grassy crops and plants with a Knife.
 item.farmersdelight.hot_cocoa.name=Hot Chocolate
+
+item.farmersdelight.pumpkin_pie_slice.name=Slice of Pumpkin Pie
+
+farmersdelight.jei.campfire=Campfire Cooking

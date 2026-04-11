@@ -1,5 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
+import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
@@ -13,19 +14,20 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.stats.StatList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockMushroomColony extends BlockBush implements IGrowable {
+    private static final int PLACING_LIGHT_LEVEL = 13;
     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
     private static final AxisAlignedBB[] SHAPES = new AxisAlignedBB[]{
             new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 0.5D, 0.75D),
@@ -59,10 +61,22 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
         BlockPos downPos = pos.down();
         IBlockState downState = worldIn.getBlockState(downPos);
-        if (downState.getBlock() == Blocks.MYCELIUM) {
+        if (isMushroomGrowBlock(downState)) {
             return true;
         }
-        return worldIn.getLight(pos) < 13 && downState.getBlock().canSustainPlant(downState, worldIn, downPos, EnumFacing.UP, this);
+        return worldIn.getLight(pos) < PLACING_LIGHT_LEVEL
+                && downState.getBlock().canSustainPlant(downState, worldIn, downPos, EnumFacing.UP, this);
+    }
+
+    private boolean isMushroomGrowBlock(IBlockState groundState) {
+        if (groundState.getBlock() == Blocks.MYCELIUM) {
+            return true;
+        }
+        if (groundState.getBlock() == Blocks.DIRT
+                && groundState.getValue(net.minecraft.block.BlockDirt.VARIANT) == net.minecraft.block.BlockDirt.DirtType.PODZOL) {
+            return true;
+        }
+        return groundState.getBlock() == ModBlocks.ORGANIC_COMPOST || groundState.getBlock() == ModBlocks.RICH_SOIL;
     }
 
     @Override
@@ -93,7 +107,8 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
         int age = state.getValue(AGE);
-        if (age < 3 && rand.nextInt(4) == 0 && canBlockStay(worldIn, pos, state)) {
+        IBlockState groundState = worldIn.getBlockState(pos.down());
+        if (age < 3 && groundState.getBlock() == ModBlocks.RICH_SOIL && rand.nextInt(4) == 0 && canBlockStay(worldIn, pos, state)) {
             worldIn.setBlockState(pos, state.withProperty(AGE, age + 1), 2);
         }
     }
@@ -127,6 +142,41 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(AGE, Math.max(0, Math.min(3, meta)));
+    }
+
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state,
+                             @Nullable TileEntity te, ItemStack stack) {
+        player.addStat(StatList.getBlockStats(this));
+        player.addExhaustion(0.005F);
+        if (worldIn.isRemote || player.capabilities.isCreativeMode) {
+            return;
+        }
+
+        NonNullList<ItemStack> drops = NonNullList.create();
+        addConfiguredDrops(drops, state.getValue(AGE), stack.getItem() == Items.SHEARS);
+        for (ItemStack drop : drops) {
+            spawnAsEntity(worldIn, pos, drop);
+        }
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        addConfiguredDrops(drops, state.getValue(AGE), false);
+    }
+
+    private void addConfiguredDrops(NonNullList<ItemStack> drops, int age, boolean usingShears) {
+        Item mushroomItem = ForgeRegistries.ITEMS.getValue(mushroomItemId);
+        if (mushroomItem == null) {
+            return;
+        }
+
+        if (usingShears && age == 3) {
+            drops.add(new ItemStack(this));
+            return;
+        }
+
+        drops.add(new ItemStack(mushroomItem, age + 2));
     }
 }
 

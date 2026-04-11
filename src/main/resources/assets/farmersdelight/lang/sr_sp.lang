@@ -132,6 +132,7 @@ farmersdelight.container.cooking_pot.served_on=Послужено на: %s
 farmersdelight.item.skillet.how_to_cook=Искористи другу руку да држиш састојке!
 farmersdelight.jei.chance=%1$s%% шанса
 farmersdelight.jei.cooking=Кување
+farmersdelight.jei.campfire=Kuvanje na logorskoj vatri
 farmersdelight.jei.cutting=Даска за сечење
 farmersdelight.jei.decomposition=Распадање
 farmersdelight.jei.decomposition.accelerators=Убрзано суседним активаторима (види испод)
@@ -242,3 +243,5 @@ item.farmersdelight.vegetable_noodles.name=Нудле са поврћем
 item.farmersdelight.vegetable_soup.name=Супа од поврћа
 item.farmersdelight.wheat_dough.name=Пшенично тесто
 itemGroup.farmersdelight=Паорово одушевљење
+
+item.farmersdelight.pumpkin_pie_slice.name=Parce pite od bundeve

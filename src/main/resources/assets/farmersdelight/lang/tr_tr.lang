@@ -138,6 +138,7 @@ farmersdelight.container.recipe_book.cookable=Pişirilebilirler Gösteriliyor
 farmersdelight.item.skillet.how_to_cook=Malzemeleri tutmak için diğer elinizi kullanın!
 farmersdelight.jei.chance=%1$s%% şansla
 farmersdelight.jei.cooking=Pişirme
+farmersdelight.jei.campfire=Kamp Ateşinde Pişirme
 farmersdelight.jei.cutting=Kesme Tahtası
 farmersdelight.jei.decomposition=Ayrıştırma
 farmersdelight.jei.decomposition.accelerators=Bitişiğindeki etkinleştiriciler tarafından hızlanır (aşağıya bakın)
@@ -257,3 +258,5 @@ item.farmersdelight.vegetable_noodles.name=Sebzeli Erişte
 item.farmersdelight.vegetable_soup.name=Sebzeli Çorba
 item.farmersdelight.wheat_dough.name=Buğday Hamuru
 itemGroup.farmersdelight=Çiftçi'nin Keyfi
+
+item.farmersdelight.pumpkin_pie_slice.name=Balkabagi turtasi dilimi

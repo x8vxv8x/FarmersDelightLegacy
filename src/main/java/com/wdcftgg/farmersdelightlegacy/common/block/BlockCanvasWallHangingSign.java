@@ -1,0 +1,166 @@
+package com.wdcftgg.farmersdelightlegacy.common.block;
+
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCanvasSign;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import java.util.Random;
+
+public class BlockCanvasWallHangingSign extends BlockContainer {
+
+    public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+    private static final AxisAlignedBB NORTH_SHAPE = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D);
+    private static final AxisAlignedBB SOUTH_SHAPE = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D);
+    private static final AxisAlignedBB WEST_SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D);
+    private static final AxisAlignedBB EAST_SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D);
+    private final ResourceLocation textureLocation;
+    private final String itemPath;
+
+    public BlockCanvasWallHangingSign(ResourceLocation textureLocation, String itemPath) {
+        super(Material.WOOD);
+        this.textureLocation = textureLocation;
+        this.itemPath = itemPath;
+        this.setHardness(1.0F);
+        this.setResistance(1.0F);
+        this.setSoundType(SoundType.WOOD);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+    }
+
+    public ResourceLocation getTextureLocation() {
+        return textureLocation;
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileEntityCanvasSign();
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.INVISIBLE;
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        switch (state.getValue(FACING)) {
+            case SOUTH:
+                return SOUTH_SHAPE;
+            case WEST:
+                return WEST_SHAPE;
+            case EAST:
+                return EAST_SHAPE;
+            default:
+                return NORTH_SHAPE;
+        }
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        return getBoundingBox(state, worldIn, pos);
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+        return true;
+    }
+
+    public boolean canAttachAt(World worldIn, BlockPos pos, EnumFacing facing) {
+        EnumFacing clockwise = facing.rotateY();
+        EnumFacing counterClockwise = facing.rotateYCCW();
+        return canAttachToNeighbor(worldIn, pos.offset(clockwise), counterClockwise, facing)
+                || canAttachToNeighbor(worldIn, pos.offset(counterClockwise), clockwise, facing);
+    }
+
+    public EnumFacing resolvePlacementFacing(World worldIn, BlockPos pos, EnumFacing clickedFace, EnumFacing[] nearestLookingDirections) {
+        for (EnumFacing lookingFacing : nearestLookingDirections) {
+            if (!lookingFacing.getAxis().isHorizontal()) {
+                continue;
+            }
+            if (lookingFacing.getAxis() == clickedFace.getAxis()) {
+                continue;
+            }
+
+            EnumFacing placementFacing = lookingFacing.getOpposite();
+            if (canAttachAt(worldIn, pos, placementFacing)) {
+                return placementFacing;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean canAttachToNeighbor(World worldIn, BlockPos neighborPos, EnumFacing supportSide, EnumFacing signFacing) {
+        IBlockState neighborState = worldIn.getBlockState(neighborPos);
+        Block neighborBlock = neighborState.getBlock();
+        if (neighborBlock instanceof BlockCanvasWallHangingSign) {
+            EnumFacing neighborFacing = neighborState.getValue(FACING);
+            return neighborFacing.getAxis() == signFacing.getAxis();
+        }
+        return neighborState.isSideSolid(worldIn, neighborPos, supportSide);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, net.minecraft.entity.EntityLivingBase placer) {
+        return facing.getAxis().isHorizontal() ? this.getDefaultState().withProperty(FACING, facing) : this.getDefaultState();
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        // Hanging sign remains even if surrounding blocks are removed.
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        EnumFacing facing = EnumFacing.byHorizontalIndex(meta & 3);
+        return this.getDefaultState().withProperty(FACING, facing);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(FACING).getHorizontalIndex();
+    }
+
+    @Override
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, itemPath));
+        return item == null ? ItemStack.EMPTY : new ItemStack(item);
+    }
+
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, itemPath));
+        return item == null ? Item.getItemFromBlock(this) : item;
+    }
+}

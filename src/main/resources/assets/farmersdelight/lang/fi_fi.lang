@@ -127,6 +127,7 @@ farmersdelight.container.cooking_pot.served_on=Astia: %s
 farmersdelight.item.skillet.how_to_cook=Pidä ainesosia toisessa kädessä!
 farmersdelight.jei.chance=%1$s%% mahdollisuus
 farmersdelight.jei.cooking=Ruoanlaitto
+farmersdelight.jei.campfire=Nuotiokokkaus
 farmersdelight.jei.cutting=Leikkuulauta
 farmersdelight.jei.decomposition=Hajoaminen
 farmersdelight.jei.decomposition.accelerators=Vieressä olevat tehostajat nopeuttavat hajoamista (ks. jäljempänä)
@@ -234,3 +235,5 @@ item.farmersdelight.vegetable_noodles.name=Vihannesnuudelit
 item.farmersdelight.vegetable_soup.name=Kasviskeitto
 item.farmersdelight.wheat_dough.name=Vehnätaikina
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Viipale kurpitsapiirakkaa

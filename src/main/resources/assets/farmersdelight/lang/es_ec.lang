@@ -99,6 +99,7 @@ farmersdelight.container.cabinet=Despensa
 farmersdelight.container.cooking_pot=Olla
 farmersdelight.container.cooking_pot.served_on=Servido en: %s
 farmersdelight.jei.cooking=Cocinando
+farmersdelight.jei.campfire=Cocina en fogata
 farmersdelight.jei.cutting=Tabla de picar
 farmersdelight.jei.decomposition=Descomposición
 farmersdelight.jei.decomposition.accelerators=Acelerado por activadores adyacentes (ver más abajo)
@@ -196,3 +197,5 @@ item.farmersdelight.vegetable_noodles.name=Fideos de verduras
 item.farmersdelight.vegetable_soup.name=Sopa de verduras
 item.farmersdelight.wheat_dough.name=Masa de trigo
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Rebanada de pastel de calabaza

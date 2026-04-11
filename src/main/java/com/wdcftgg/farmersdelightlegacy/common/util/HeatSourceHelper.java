@@ -1,5 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.util;
 
+import com.wdcftgg.farmersdelightlegacy.api.heat.HeatSourceApi;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockStove;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -19,6 +20,29 @@ public final class HeatSourceHelper {
         }
 
         IBlockState state = world.getBlockState(pos);
+        if (HeatSourceApi.isRegisteredAsDirectHeatSource(world, pos, state)) {
+            return true;
+        }
+
+        return isBuiltInDirectHeatSource(state);
+    }
+
+    public static boolean isVisualSupportHeatSource(World world, BlockPos pos) {
+        if (world == null || pos == null || !world.isBlockLoaded(pos)) {
+            return false;
+        }
+
+        IBlockState state = world.getBlockState(pos);
+        Block block = state.getBlock();
+        if (block == Blocks.FIRE || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA) {
+            return true;
+        }
+
+        Material material = state.getMaterial();
+        return material == Material.FIRE || material == Material.LAVA;
+    }
+
+    private static boolean isBuiltInDirectHeatSource(IBlockState state) {
         Block block = state.getBlock();
         if (block instanceof BlockStove) {
             return state.getValue(BlockStove.LIT);

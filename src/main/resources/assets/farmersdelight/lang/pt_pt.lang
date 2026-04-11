@@ -101,6 +101,7 @@ farmersdelight.container.cooking_pot.heated=Aquecida
 farmersdelight.container.cooking_pot.not_heated=Precisa de calor abaixo
 farmersdelight.container.cooking_pot.served_on=Servido em: %s
 farmersdelight.jei.cooking=Panela
+farmersdelight.jei.campfire=Cozinha na fogueira
 farmersdelight.jei.cutting=Tábua de corte
 farmersdelight.jei.decomposition=Decomposição
 farmersdelight.jei.decomposition.accelerators=Acelerado por ativadores próximos (ver abaixo)
@@ -200,3 +201,5 @@ item.farmersdelight.vegetable_noodles.name=Noodles de vegetais
 item.farmersdelight.vegetable_soup.name=Sopa de vegetais
 item.farmersdelight.wheat_dough.name=Massa de trigo
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Fatia de tarte de abobora

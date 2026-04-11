@@ -135,6 +135,7 @@ farmersdelight.container.recipe_book.cookable=Mostrant plats cuinables
 farmersdelight.item.skillet.how_to_cook=Utilitza l'altre mà per sostenir els ingredients!
 farmersdelight.jei.chance=%1$s%% de probabilitat
 farmersdelight.jei.cooking=Cuinant
+farmersdelight.jei.campfire=Cuina a la foguera
 farmersdelight.jei.cutting=Taula per tallar
 farmersdelight.jei.decomposition=Descomposició
 farmersdelight.jei.decomposition.accelerators=Accelerat per activadors propers (veure mes avall)
@@ -251,3 +252,5 @@ item.farmersdelight.vegetable_noodles.name=Fideus de verdures
 item.farmersdelight.vegetable_soup.name=Sopa de verdures
 item.farmersdelight.wheat_dough.name=Massa de blat
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Tall de pastis de carbassa

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "fd_dough",
+  "ingredients": [
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "listAllEgg"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:wheat_dough",
+    "count": 3
+  }
+}

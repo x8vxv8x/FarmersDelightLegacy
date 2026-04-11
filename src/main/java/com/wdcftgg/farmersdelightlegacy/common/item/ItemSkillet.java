@@ -1,7 +1,7 @@
 package com.wdcftgg.farmersdelightlegacy.common.item;
 
 import com.google.common.collect.Multimap;
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockSkillet;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipe;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipeManager;
@@ -10,24 +10,20 @@ import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntitySkillet;
 import com.wdcftgg.farmersdelightlegacy.common.util.HeatSourceHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -46,8 +42,14 @@ public class ItemSkillet extends ItemBlock {
         super(block);
         this.setMaxStackSize(1);
         this.setMaxDamage(SKILLET_TOOL_MATERIAL.getMaxUses());
-        this.addPropertyOverride(new ResourceLocation(Tags.MOD_ID, "cooking"),
-                (stack, world, entity) -> hasCookingItem(stack) ? 1.0F : 0.0F);
+    }
+
+    @Override
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+        if (!player.isSneaking()) {
+            return EnumActionResult.FAIL;
+        }
+        return EnumActionResult.PASS;
     }
 
     @Override
@@ -55,14 +57,14 @@ public class ItemSkillet extends ItemBlock {
         if (player.isSneaking()) {
             return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
         }
-        return EnumActionResult.PASS;
+        return EnumActionResult.FAIL;
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack skilletStack = playerIn.getHeldItem(handIn);
         if (!isPlayerNearHeatSource(playerIn, worldIn)) {
-            return new ActionResult<>(EnumActionResult.PASS, skilletStack);
+            return new ActionResult<>(EnumActionResult.FAIL, skilletStack);
         }
 
         EnumHand otherHand = handIn == EnumHand.MAIN_HAND ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND;
@@ -96,7 +98,7 @@ public class ItemSkillet extends ItemBlock {
 
     @Override
     public int getMaxItemUseDuration(ItemStack stack) {
-        int fireAspectLevel = net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.FIRE_ASPECT, stack);
+        int fireAspectLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
         NBTTagCompound tag = stack.getTagCompound();
         int cookingTime = tag != null ? tag.getInteger(NBT_COOK_TIME_HANDHELD) : 0;
         return BlockSkillet.getSkilletCookingTime(cookingTime, fireAspectLevel);
@@ -232,6 +234,11 @@ public class ItemSkillet extends ItemBlock {
         return tag != null && tag.hasKey(NBT_COOKING, 10);
     }
 
+    public static ItemStack getCookingStackForRender(ItemStack stack) {
+        ItemStack cookingStack = takeCookingStack(stack);
+        return cookingStack.isEmpty() ? ItemStack.EMPTY : cookingStack;
+    }
+
     private static ItemStack takeCookingStack(ItemStack stack) {
         NBTTagCompound tag = stack.getTagCompound();
         if (tag == null || !tag.hasKey(NBT_COOKING, 10)) {
@@ -254,7 +261,7 @@ public class ItemSkillet extends ItemBlock {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
+    @Mod.EventBusSubscriber(modid = FarmersDelightLegacy.MOD_ID)
     public static class SkilletEvents {
 
         @SubscribeEvent

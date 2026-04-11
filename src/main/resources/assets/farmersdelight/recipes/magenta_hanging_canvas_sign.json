@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "fd_hanging_canvas_sign",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "fdHangingCanvasSigns"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dyeMagenta"
+    }
+  ],
+  "result": {
+    "item": "farmersdelight:magenta_hanging_canvas_sign"
+  }
+}

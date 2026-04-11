@@ -3,9 +3,9 @@ package com.wdcftgg.farmersdelightlegacy.common.tile;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CuttingBoardRecipeManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.Collections;

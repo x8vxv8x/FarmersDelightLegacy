@@ -160,6 +160,7 @@ farmersdelight.item.skillet.how_to_cook=다른 손에 재료를 들고 사용하
 farmersdelight.item.skillet.underwater=수중에서 요리할 수 없습니다...
 farmersdelight.jei.chance=%1$s%% 확률
 farmersdelight.jei.cooking=조리
+farmersdelight.jei.campfire=모닥불 요리
 farmersdelight.jei.cutting=도마
 farmersdelight.jei.decomposition=분해
 farmersdelight.jei.decomposition.accelerators=근처 활성화제에 의해 촉진됨 (아래 참조)
@@ -286,3 +287,5 @@ item.farmersdelight.vegetable_noodles.name=잡채
 item.farmersdelight.vegetable_soup.name=야채 수프
 item.farmersdelight.wheat_dough.name=밀가루 반죽
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=호박 파이 조각

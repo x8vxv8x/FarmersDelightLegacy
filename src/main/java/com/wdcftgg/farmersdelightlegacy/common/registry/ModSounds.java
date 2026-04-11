@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.registry;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -35,7 +35,7 @@ public final class ModSounds {
     }
 
     private static SoundEvent register(RegistryEvent.Register<SoundEvent> event, String soundPath) {
-        ResourceLocation soundId = new ResourceLocation(Tags.MOD_ID, soundPath);
+        ResourceLocation soundId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, soundPath);
         SoundEvent soundEvent = new SoundEvent(soundId);
         soundEvent.setRegistryName(soundId);
         event.getRegistry().register(soundEvent);

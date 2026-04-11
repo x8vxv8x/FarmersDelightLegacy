@@ -1,6 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.client.jei;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -12,8 +12,8 @@ import net.minecraft.util.ResourceLocation;
 
 public final class CookingPotRecipeCategory implements IRecipeCategory<CookingPotJeiRecipe> {
 
-    private static final ResourceLocation JEI_TEXTURE = new ResourceLocation(Tags.MOD_ID, "textures/gui/jei/cooking_pot.png");
-    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Tags.MOD_ID, "textures/gui/cooking_pot.png");
+    private static final ResourceLocation JEI_TEXTURE = new ResourceLocation(FarmersDelightLegacy.MOD_ID, "textures/gui/jei/cooking_pot.png");
+    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(FarmersDelightLegacy.MOD_ID, "textures/gui/cooking_pot.png");
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -40,7 +40,7 @@ public final class CookingPotRecipeCategory implements IRecipeCategory<CookingPo
 
     @Override
     public String getModName() {
-        return Tags.MOD_NAME;
+        return FarmersDelightLegacy.MOD_NAME;
     }
 
     @Override

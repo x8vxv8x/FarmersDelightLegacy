@@ -1,18 +1,18 @@
 package com.wdcftgg.farmersdelightlegacy.client.jei;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 public final class CuttingBoardRecipeCategory implements IRecipeCategory<CuttingBoardJeiRecipe> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Tags.MOD_ID, "textures/gui/jei/cutting_board.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(FarmersDelightLegacy.MOD_ID, "textures/gui/jei/cutting_board.png");
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -38,7 +38,7 @@ public final class CuttingBoardRecipeCategory implements IRecipeCategory<Cutting
 
     @Override
     public String getModName() {
-        return Tags.MOD_NAME;
+        return FarmersDelightLegacy.MOD_NAME;
     }
 
     @Override

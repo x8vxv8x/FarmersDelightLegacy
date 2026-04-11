@@ -79,6 +79,31 @@ public final class ModOreDictionary {
                 OreDictionary.registerOre("toolKnife", entry.getValue());
             }
         }
+
+        registerCanvasSignOreGroups();
+    }
+
+    private static void registerCanvasSignOreGroups() {
+        String[] canvasSigns = new String[]{
+                "canvas_sign", "black_canvas_sign", "blue_canvas_sign", "brown_canvas_sign", "cyan_canvas_sign",
+                "gray_canvas_sign", "green_canvas_sign", "light_blue_canvas_sign", "light_gray_canvas_sign",
+                "lime_canvas_sign", "magenta_canvas_sign", "orange_canvas_sign", "pink_canvas_sign",
+                "purple_canvas_sign", "red_canvas_sign", "white_canvas_sign", "yellow_canvas_sign"
+        };
+        String[] hangingCanvasSigns = new String[]{
+                "hanging_canvas_sign", "black_hanging_canvas_sign", "blue_hanging_canvas_sign", "brown_hanging_canvas_sign",
+                "cyan_hanging_canvas_sign", "gray_hanging_canvas_sign", "green_hanging_canvas_sign",
+                "light_blue_hanging_canvas_sign", "light_gray_hanging_canvas_sign", "lime_hanging_canvas_sign",
+                "magenta_hanging_canvas_sign", "orange_hanging_canvas_sign", "pink_hanging_canvas_sign",
+                "purple_hanging_canvas_sign", "red_hanging_canvas_sign", "white_hanging_canvas_sign", "yellow_hanging_canvas_sign"
+        };
+
+        for (String itemName : canvasSigns) {
+            registerOre("fdCanvasSigns", itemName);
+        }
+        for (String itemName : hangingCanvasSigns) {
+            registerOre("fdHangingCanvasSigns", itemName);
+        }
     }
 
     private static void registerVanillaFallbacks() {
@@ -228,6 +253,8 @@ public final class ModOreDictionary {
         tagMap.put("forge:salad_ingredients", "listAllveggie");
         tagMap.put("farmersdelight:cabbage_roll_ingredients", "listAllveggie");
         tagMap.put("farmersdelight:wolf_prey", "listAllmeatraw");
+        tagMap.put("farmersdelight:canvas_signs", "fdCanvasSigns");
+        tagMap.put("farmersdelight:hanging_canvas_signs", "fdHangingCanvasSigns");
         return Collections.unmodifiableMap(tagMap);
     }
 }

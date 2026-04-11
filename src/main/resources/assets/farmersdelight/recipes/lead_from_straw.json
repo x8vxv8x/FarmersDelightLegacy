@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ss ",
+    "ss ",
+    "  s"
+  ],
+  "key": {
+    "s": {
+      "item": "farmersdelight:straw"
+    }
+  },
+  "result": {
+    "item": "minecraft:lead"
+  }
+}

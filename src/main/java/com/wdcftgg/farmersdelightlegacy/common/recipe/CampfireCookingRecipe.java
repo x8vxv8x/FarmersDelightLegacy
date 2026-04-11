@@ -4,8 +4,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 public final class CampfireCookingRecipe {
 

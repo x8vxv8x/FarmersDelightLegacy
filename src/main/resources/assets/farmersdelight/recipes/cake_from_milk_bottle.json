@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "cake",
+  "pattern": [
+    "mmm",
+    "ses",
+    "www"
+  ],
+  "key": {
+    "e": {
+      "type": "forge:ore_dict",
+      "ore": "listAllEgg"
+    },
+    "m": {
+      "type": "forge:ore_dict",
+      "ore": "listAllmilk"
+    },
+    "s": {
+      "item": "minecraft:sugar"
+    },
+    "w": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "result": {
+    "item": "minecraft:cake"
+  }
+}

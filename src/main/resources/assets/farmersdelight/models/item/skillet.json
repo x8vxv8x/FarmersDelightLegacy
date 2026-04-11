@@ -39,13 +39,5 @@
       "translation": [0, 0, -6.25],
       "scale": [0.75, 0.75, 0.75]
     }
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "farmersdelight:cooking": 1.0
-      },
-      "model": "farmersdelight:item/skillet_cooking"
-    }
-  ]
+  }
 }

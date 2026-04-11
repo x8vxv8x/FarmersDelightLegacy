@@ -139,6 +139,7 @@ farmersdelight.container.recipe_book.cookable=Visar det som kan lagas
 farmersdelight.item.skillet.how_to_cook=Använd din andra hand för att hålla ingredienserna!
 farmersdelight.jei.chance=%1$s%% chans
 farmersdelight.jei.cooking=Matlagning
+farmersdelight.jei.campfire=Matlagning över lägereld
 farmersdelight.jei.cutting=Skärbräda
 farmersdelight.jei.decomposition=Sönderfall
 farmersdelight.jei.decomposition.accelerators=Snabbas upp av intilliggande aktivatorer (se nedan)
@@ -258,3 +259,5 @@ item.farmersdelight.vegetable_noodles.name=Grönsaksnudlar
 item.farmersdelight.vegetable_soup.name=Vegetarisk soppa
 item.farmersdelight.wheat_dough.name=Vetedeg
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Skiva pumpapaj

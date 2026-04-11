@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "fd_apple_pie",
+  "pattern": [
+    "###",
+    "aaa",
+    "xOx"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:wheat"
+    },
+    "O": {
+      "item": "farmersdelight:pie_crust"
+    },
+    "a": {
+      "item": "minecraft:apple"
+    },
+    "x": {
+      "item": "minecraft:sugar"
+    }
+  },
+  "result": {
+    "item": "farmersdelight:apple_pie"
+  }
+}

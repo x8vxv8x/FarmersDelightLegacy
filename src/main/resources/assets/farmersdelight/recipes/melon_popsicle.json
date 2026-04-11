@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " mm",
+    "imm",
+    "-i "
+  ],
+  "key": {
+    "-": {
+      "item": "minecraft:stick"
+    },
+    "i": {
+      "item": "minecraft:ice"
+    },
+    "m": {
+      "item": "minecraft:melon_slice"
+    }
+  },
+  "result": {
+    "item": "farmersdelight:melon_popsicle"
+  }
+}

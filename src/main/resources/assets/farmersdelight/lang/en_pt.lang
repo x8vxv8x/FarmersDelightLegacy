@@ -194,6 +194,7 @@ farmersdelight.item.skillet.how_to_cook=Hoist yer grub by yer other hand ta cook
 farmersdelight.item.skillet.underwater=Why are ye tryin' ta fry under the sea?
 farmersdelight.jei.chance=Yer odds be %1$s%%
 farmersdelight.jei.cooking=Cookin'
+farmersdelight.jei.campfire=Campfire Cooking
 farmersdelight.jei.cutting=Choppin' Block
 farmersdelight.jei.decomposition=Garbage Rottin'
 farmersdelight.jei.decomposition.accelerators=Leave it near decayin' stuffs (see below)
@@ -321,3 +322,5 @@ item.farmersdelight.vegetable_noodles.name=Veggies n' Noodles
 item.farmersdelight.vegetable_soup.name=Soup o' Veggies
 item.farmersdelight.wheat_dough.name=Raw Hard Tack
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Slice of Pumpkin Pie

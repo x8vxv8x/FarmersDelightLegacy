@@ -1,8 +1,10 @@
 package com.wdcftgg.farmersdelightlegacy.common.tile;
 
-import com.wdcftgg.farmersdelight.Tags;
+import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import com.wdcftgg.farmersdelightlegacy.common.block.BlockCookingPot;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CookingPotRecipe;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CookingPotRecipeManager;
+import com.wdcftgg.farmersdelightlegacy.common.util.CookingPotParticleDispatcher;
 import com.wdcftgg.farmersdelightlegacy.common.util.HeatSourceHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,21 +12,17 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TileEntityCookingPot extends TileEntity implements IInventory, ITickable {
 
@@ -175,7 +173,7 @@ public class TileEntityCookingPot extends TileEntity implements IInventory, ITic
 
     @Override
     public String getName() {
-        return Tags.MOD_ID + ".container.cooking_pot";
+        return FarmersDelightLegacy.MOD_ID + ".container.cooking_pot";
     }
 
     @Override
@@ -190,9 +188,16 @@ public class TileEntityCookingPot extends TileEntity implements IInventory, ITic
 
     @Override
     public void update() {
-        if (this.world == null || this.world.isRemote) {
+        if (this.world == null) {
             return;
         }
+
+        if (this.world.isRemote) {
+            animationTick();
+            return;
+        }
+
+        updateSupportState();
 
         boolean didInventoryChange = false;
         int previousCookTime = this.cookTime;
@@ -228,8 +233,41 @@ public class TileEntityCookingPot extends TileEntity implements IInventory, ITic
         }
     }
 
+    private void animationTick() {
+        if (!isHeated()) {
+            return;
+        }
+
+        if (this.world.rand.nextFloat() < 0.2F) {
+            double x = this.pos.getX() + 0.5D + (this.world.rand.nextDouble() * 0.6D - 0.3D);
+            double y = this.pos.getY() + 0.7D;
+            double z = this.pos.getZ() + 0.5D + (this.world.rand.nextDouble() * 0.6D - 0.3D);
+            CookingPotParticleDispatcher.spawnCookingPotBubble(this.world, x, y, z, 0.0D, 0.0D, 0.0D);
+        }
+
+        if (this.world.rand.nextFloat() < 0.05F) {
+            double x = this.pos.getX() + 0.5D + (this.world.rand.nextDouble() * 0.4D - 0.2D);
+            double y = this.pos.getY() + 0.7D;
+            double z = this.pos.getZ() + 0.5D + (this.world.rand.nextDouble() * 0.4D - 0.2D);
+            double motionY = this.world.rand.nextBoolean() ? 0.015D : 0.005D;
+            CookingPotParticleDispatcher.spawnSteam(this.world, x, y, z, 0.0D, motionY, 0.0D);
+        }
+    }
+
     public boolean isHeated() {
         return HeatSourceHelper.isDirectHeatSource(this.world, this.pos.down());
+    }
+
+    private void updateSupportState() {
+        IBlockState state = this.world.getBlockState(this.pos);
+        if (!(state.getBlock() instanceof BlockCookingPot)) {
+            return;
+        }
+
+        boolean support = HeatSourceHelper.isVisualSupportHeatSource(this.world, this.pos.down());
+        if (state.getValue(BlockCookingPot.SUPPORT) != support) {
+            this.world.setBlockState(this.pos, state.withProperty(BlockCookingPot.SUPPORT, support), 2);
+        }
     }
 
     private List<ItemStack> getInputStacks() {

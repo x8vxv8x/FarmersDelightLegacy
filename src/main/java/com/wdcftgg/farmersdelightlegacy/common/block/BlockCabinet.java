@@ -7,25 +7,19 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.Random;
 
 public class BlockCabinet extends BlockHorizontal implements ITileEntityProvider {
     public static final PropertyBool OPEN = PropertyBool.create("open");
@@ -41,6 +35,16 @@ public class BlockCabinet extends BlockHorizontal implements ITileEntityProvider
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityCabinet();
+    }
+
+    @Override
+    public boolean hasTileEntity(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return createNewTileEntity(world, getMetaFromState(state));
     }
 
     @Override
@@ -89,7 +93,13 @@ public class BlockCabinet extends BlockHorizontal implements ITileEntityProvider
             return true;
         }
 
-        playerIn.openGui(FarmersDelightLegacy.getInstance(), ModGuiHandler.CABINET_GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+
+        playerIn.openGui(FarmersDelightLegacy.getInstance(),
+                ModGuiHandler.CABINET_GUI_ID,
+                worldIn,
+                pos.getX(),
+                pos.getY(),
+                pos.getZ());
         return true;
     }
 
@@ -101,14 +111,6 @@ public class BlockCabinet extends BlockHorizontal implements ITileEntityProvider
             if (tileEntity instanceof TileEntityCabinet) {
                 ((TileEntityCabinet) tileEntity).setCustomName(stack.getDisplayName());
             }
-        }
-    }
-
-    @Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        TileEntity tileEntity = worldIn.getTileEntity(pos);
-        if (tileEntity instanceof TileEntityCabinet) {
-            ((TileEntityCabinet) tileEntity).recheckOpen();
         }
     }
 
@@ -129,7 +131,7 @@ public class BlockCabinet extends BlockHorizontal implements ITileEntityProvider
 
     @Override
     public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
-        return net.minecraft.inventory.Container.calcRedstone(worldIn.getTileEntity(pos));
+        return Container.calcRedstone(worldIn.getTileEntity(pos));
     }
 }
 

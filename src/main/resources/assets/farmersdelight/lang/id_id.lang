@@ -160,6 +160,7 @@ farmersdelight.item.skillet.how_to_cook=Gunakan tanganmu yang lain untuk memegan
 farmersdelight.item.skillet.underwater=Tidak bisa memasak di bawah air...
 farmersdelight.jei.chance=%1$s%% peluang
 farmersdelight.jei.cooking=Memasak
+farmersdelight.jei.campfire=Memasak di api unggun
 farmersdelight.jei.cutting=Talenan
 farmersdelight.jei.decomposition=Penguraian
 farmersdelight.jei.decomposition.accelerators=Dipercepat oleh aktivator yang berdekatan (lihat di bawah)
@@ -286,3 +287,5 @@ item.farmersdelight.vegetable_noodles.name=Mie Sayuran
 item.farmersdelight.vegetable_soup.name=Sup Sayuran
 item.farmersdelight.wheat_dough.name=Adonan Gandum
 itemGroup.farmersdelight=Farmer's Delight
+
+item.farmersdelight.pumpkin_pie_slice.name=Sepotong pai labu

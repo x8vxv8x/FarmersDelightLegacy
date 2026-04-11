@@ -160,6 +160,7 @@ farmersdelight.item.skillet.how_to_cook=非利手持食！
 farmersdelight.item.skillet.underwater=入水不得烹……
 farmersdelight.jei.chance=%1$s%%之率
 farmersdelight.jei.cooking=烹
+farmersdelight.jei.campfire=營火烹飪
 farmersdelight.jei.cutting=俎
 farmersdelight.jei.decomposition=分
 farmersdelight.jei.decomposition.accelerators=下物伴則速
@@ -286,3 +287,5 @@ item.farmersdelight.vegetable_noodles.name=菜韌麵
 item.farmersdelight.vegetable_soup.name=菜羹
 item.farmersdelight.wheat_dough.name=麵糰
 itemGroup.farmersdelight=農家樂
+
+item.farmersdelight.pumpkin_pie_slice.name=南瓜派片
