@@ -28,12 +28,12 @@ public final class ModBlocks {
     public static final Map<String, Block> BLOCKS = new LinkedHashMap<>();
     public static final List<Item> BLOCK_ITEMS = new ArrayList<>();
 
-    public static final Block TOMATOES = registerBlockOnly("tomatoes", new ModCropBlock("tomato_seeds", "tomato"));
-    public static final Block RICE = registerBlockOnly("rice", new ModCropBlock("rice", "rice_panicle"));
-    public static final Block CABBAGES = registerBlockOnly("cabbages", new ModCropBlock("cabbage_seeds", "cabbage"));
-    public static final Block ONIONS = registerBlockOnly("onions", new ModCropBlock("onion", "onion"));
-    public static final Block BUDDING_TOMATOES = registerBlockOnly("budding_tomatoes", new ModCropBlock("tomato_seeds", "tomato", 4));
-    public static final Block RICE_PANICLES = registerBlockOnly("rice_panicles", new ModCropBlock("rice", "rice_panicle", 3));
+    public static final Block TOMATOES = registerBlockOnly("tomatoes", new BlockTomatoVine());
+    public static final Block RICE = registerBlockOnly("rice", new BlockRice());
+    public static final Block CABBAGES = registerBlockOnly("cabbages", new BlockCabbage());
+    public static final Block ONIONS = registerBlockOnly("onions", new BlockOnion());
+    public static final Block BUDDING_TOMATOES = registerBlockOnly("budding_tomatoes", new BlockBuddingTomato());
+    public static final Block RICE_PANICLES = registerBlockOnly("rice_panicles", new BlockRicePanicles());
 
     public static final Block COOKING_POT = register("cooking_pot", new BlockCookingPot());
     public static final Block CUTTING_BOARD = register("cutting_board", new BlockCuttingBoard());
@@ -47,7 +47,7 @@ public final class ModBlocks {
     public static final Block RICE_BALE = register("rice_bale", basicBlock(Material.CLOTH, SoundType.PLANT, 0.5F));
     public static final Block RICE_BAG = register("rice_bag", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.8F));
     public static final Block STRAW_BALE = register("straw_bale", basicBlock(Material.CLOTH, SoundType.PLANT, 0.5F));
-    public static final Block SAFETY_NET = register("safety_net", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.2F));
+    public static final Block SAFETY_NET = register("safety_net", new BlockSafetyNet());
     public static final Block ACACIA_CABINET = register("acacia_cabinet", new BlockCabinet());
     public static final Block BAMBOO_CABINET = register("bamboo_cabinet", new BlockCabinet());
     public static final Block BIRCH_CABINET = register("birch_cabinet", new BlockCabinet());
@@ -88,11 +88,11 @@ public final class ModBlocks {
     public static final Block WILD_RICE = register("wild_rice", new BlockWildRice());
     public static final Block BROWN_MUSHROOM_COLONY = register("brown_mushroom_colony", new BlockMushroomColony("minecraft:brown_mushroom"));
     public static final Block RED_MUSHROOM_COLONY = register("red_mushroom_colony", new BlockMushroomColony("minecraft:red_mushroom"));
-    public static final Block ROPE = register("rope", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.3F));
-    public static final Block CANVAS_RUG = register("canvas_rug", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.2F));
-    public static final Block TATAMI = register("tatami", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.2F));
-    public static final Block FULL_TATAMI_MAT = register("full_tatami_mat", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.2F));
-    public static final Block HALF_TATAMI_MAT = register("half_tatami_mat", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.2F));
+    public static final Block ROPE = register("rope", new BlockRope());
+    public static final Block CANVAS_RUG = register("canvas_rug", new BlockCanvasRug());
+    public static final Block TATAMI = register("tatami", new BlockTatami());
+    public static final Block FULL_TATAMI_MAT = register("full_tatami_mat", new BlockTatamiMat());
+    public static final Block HALF_TATAMI_MAT = register("half_tatami_mat", new BlockTatamiHalfMat());
 
     static {
         registerCanvasSignFamily();

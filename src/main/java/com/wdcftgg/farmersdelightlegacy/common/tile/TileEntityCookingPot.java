@@ -10,6 +10,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +18,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -24,13 +26,16 @@ import net.minecraft.util.text.TextComponentTranslation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityCookingPot extends TileEntity implements IInventory, ITickable {
+public class TileEntityCookingPot extends TileEntity implements IInventory, ISidedInventory, ITickable {
 
     private static final int INPUT_SLOT_COUNT = 6;
     private static final int SLOT_COUNT = 9;
     private static final int MEAL_DISPLAY_SLOT = 6;
     private static final int CONTAINER_SLOT = 7;
     private static final int OUTPUT_SLOT = 8;
+    private static final int[] TOP_SLOTS = new int[]{0, 1, 2, 3, 4, 5};
+    private static final int[] SIDE_SLOTS = new int[]{CONTAINER_SLOT};
+    private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT};
 
     private final List<ItemStack> itemStacks;
     private int cookTime;
@@ -538,6 +543,33 @@ public class TileEntityCookingPot extends TileEntity implements IInventory, ITic
                 || stack.getItem() == Items.GLASS_BOTTLE
                 || stack.getItem() == Items.BUCKET
                 || isContainerValid(stack);
+    }
+
+    @Override
+    public int[] getSlotsForFace(EnumFacing side) {
+        if (side == EnumFacing.UP) {
+            return TOP_SLOTS;
+        }
+        if (side == EnumFacing.DOWN) {
+            return BOTTOM_SLOTS;
+        }
+        return SIDE_SLOTS;
+    }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+        if (direction == EnumFacing.UP) {
+            return index >= 0 && index < INPUT_SLOT_COUNT && this.isItemValidForSlot(index, itemStackIn);
+        }
+        if (direction == EnumFacing.DOWN) {
+            return false;
+        }
+        return index == CONTAINER_SLOT && this.isServingContainer(itemStackIn);
+    }
+
+    @Override
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+        return direction == EnumFacing.DOWN && index == OUTPUT_SLOT;
     }
 
     @Override

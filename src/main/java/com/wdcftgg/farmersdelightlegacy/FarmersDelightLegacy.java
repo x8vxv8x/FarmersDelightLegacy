@@ -12,7 +12,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = FarmersDelightLegacy.MOD_ID, name = FarmersDelightLegacy.MOD_NAME, version = FarmersDelightLegacy.VERSION)
+@Mod(modid = FarmersDelightLegacy.MOD_ID,
+        name = FarmersDelightLegacy.MOD_NAME,
+        version = FarmersDelightLegacy.VERSION
+        , dependencies="required-after:fluidlogged_api")
 public class FarmersDelightLegacy {
 
     public static final String MOD_ID = "farmersdelight";

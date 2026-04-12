@@ -1,28 +1,28 @@
 {
   "variants": {
-    "age=0": {
+    "age=0,supporting=false": {
       "model": "farmersdelight:rice_stage0"
     },
-    "age=1": {
+    "age=1,supporting=false": {
       "model": "farmersdelight:rice_stage1"
     },
-    "age=2": {
+    "age=2,supporting=false": {
       "model": "farmersdelight:rice_stage2"
     },
-    "age=3": {
+    "age=3,supporting=false": {
       "model": "farmersdelight:rice_stage3"
     },
-    "age=4": {
-      "model": "farmersdelight:rice_stage3"
+    "age=0,supporting=true": {
+      "model": "farmersdelight:rice_stage0"
     },
-    "age=5": {
-      "model": "farmersdelight:rice_stage3"
+    "age=1,supporting=true": {
+      "model": "farmersdelight:rice_stage1"
     },
-    "age=6": {
-      "model": "farmersdelight:rice_stage3"
+    "age=2,supporting=true": {
+      "model": "farmersdelight:rice_stage2"
     },
-    "age=7": {
-      "model": "farmersdelight:rice_stage3"
+    "age=3,supporting=true": {
+      "model": "farmersdelight:rice_supporting"
     }
   }
 }

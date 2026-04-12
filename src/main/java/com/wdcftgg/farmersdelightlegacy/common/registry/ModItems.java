@@ -2,6 +2,10 @@ package com.wdcftgg.farmersdelightlegacy.common.registry;
 
 import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.ModCreativeTab;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemDrinkableTooltip;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemFoodTooltip;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemPlantableFood;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemRice;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
@@ -10,6 +14,10 @@ import net.minecraftforge.event.RegistryEvent;
 import java.util.*;
 
 public final class ModItems {
+    private static final int BRIEF_DURATION = 600;
+    private static final int SHORT_DURATION = 1200;
+    private static final int MEDIUM_DURATION = 3600;
+    private static final int LONG_DURATION = 6000;
 
     private static final String[] ITEM_TEXTURE_NAMES = new String[]{
             "apple_cider", "apple_pie", "apple_pie_slice", "bacon", "bacon_and_eggs", "bacon_sandwich", "baked_cod_stew",
@@ -44,7 +52,7 @@ public final class ModItems {
             "chicken_sandwich", "chicken_soup", "chocolate_pie", "chocolate_pie_slice", "cod_roll", "cod_slice", "cooked_bacon",
             "cooked_chicken_cuts", "cooked_cod_slice", "cooked_mutton_chops", "cooked_rice", "cooked_salmon_slice", "dumplings",
             "egg_sandwich", "fish_stew", "fried_egg", "fried_rice", "fruit_salad", "glow_berry_custard", "grilled_salmon", "ham",
-            "hamburger", "honey_cookie", "honey_glazed_ham", "horse_feed", "hot_cocoa", "kelp_roll", "kelp_roll_slice",
+            "hamburger", "honey_cookie", "honey_glazed_ham", "hot_cocoa", "kelp_roll", "kelp_roll_slice",
             "melon_juice", "melon_popsicle", "milk_bottle", "minced_beef", "mixed_salad", "mushroom_rice", "mutton_chops",
             "mutton_wrap", "nether_salad", "noodle_soup", "onion", "pasta_with_meatballs", "pasta_with_mutton_chop", "pie_crust",
             "pumpkin_pie_slice", "pumpkin_slice", "pumpkin_soup", "ratatouille", "raw_pasta", "rice", "rice_panicle",
@@ -58,6 +66,7 @@ public final class ModItems {
 
     public static Item TOMATO;
     public static Item TOMATO_SEEDS;
+    public static Item ONION;
     public static Item RICE;
     public static Item RICE_PANICLE;
 
@@ -69,10 +78,91 @@ public final class ModItems {
             return;
         }
 
-        TOMATO = registerSimple("tomato");
-        TOMATO_SEEDS = register("tomato_seeds", new ItemSeeds(ModBlocks.TOMATOES, Blocks.FARMLAND));
-        RICE = register("rice", new ItemSeeds(ModBlocks.RICE, Blocks.FARMLAND));
+        TOMATO = registerFood("tomato", 1, 0.3F);
+        TOMATO_SEEDS = register("tomato_seeds", new ItemSeeds(ModBlocks.BUDDING_TOMATOES, Blocks.FARMLAND));
+        register("cabbage_seeds", new ItemSeeds(ModBlocks.CABBAGES, Blocks.FARMLAND));
+        ONION = register("onion", new ItemPlantableFood(2, 0.4F, ModBlocks.ONIONS, Blocks.FARMLAND, ModBlocks.RICH_SOIL_FARMLAND));
+        RICE = register("rice", new ItemRice(ModBlocks.RICE));
         RICE_PANICLE = registerSimple("rice_panicle");
+        registerFood("cabbage", 2, 0.4F);
+        registerDrink("apple_cider", 4, 0.4F, true, "minecraft:absorption", SHORT_DURATION, 0, 1.0F,
+                ItemDrinkableTooltip.DrinkEffect.NONE);
+        registerFood("fried_egg", 4, 0.4F);
+        registerFood("wheat_dough", 2, 0.3F, false, "minecraft:hunger", BRIEF_DURATION, 0, 0.3F);
+        registerFood("raw_pasta", 2, 0.3F, false, "minecraft:hunger", BRIEF_DURATION, 0, 0.3F);
+        registerFood("pie_crust", 2, 0.2F);
+        registerFood("pumpkin_slice", 3, 0.3F);
+        registerFood("cabbage_leaf", 1, 0.4F);
+        registerFood("minced_beef", 2, 0.3F);
+        registerFood("beef_patty", 4, 0.8F);
+        registerFood("chicken_cuts", 1, 0.3F, false, "minecraft:hunger", BRIEF_DURATION, 0, 0.3F);
+        registerFood("cooked_chicken_cuts", 3, 0.6F);
+        registerFood("bacon", 2, 0.3F);
+        registerFood("cooked_bacon", 4, 0.8F);
+        registerFood("cod_slice", 1, 0.1F);
+        registerFood("cooked_cod_slice", 3, 0.5F);
+        registerFood("salmon_slice", 1, 0.1F);
+        registerFood("cooked_salmon_slice", 3, 0.8F);
+        registerFood("mutton_chops", 1, 0.3F);
+        registerFood("cooked_mutton_chops", 3, 0.8F);
+        registerFood("ham", 5, 0.3F);
+        registerFood("smoked_ham", 10, 0.8F);
+        registerFood("sweet_berry_cookie", 2, 0.1F);
+        registerFood("honey_cookie", 2, 0.1F);
+        registerFood("melon_popsicle", 3, 0.2F, true, null, 0, 0, 0.0F);
+        registerFood("cake_slice", 2, 0.1F, false, "minecraft:speed", 400, 0, 1.0F);
+        registerFood("apple_pie_slice", 3, 0.3F, false, "minecraft:speed", BRIEF_DURATION, 0, 1.0F);
+        registerFood("sweet_berry_cheesecake_slice", 3, 0.3F, false, "minecraft:speed", BRIEF_DURATION, 0, 1.0F);
+        registerFood("chocolate_pie_slice", 3, 0.3F, false, "minecraft:speed", BRIEF_DURATION, 0, 1.0F);
+        registerFood("pumpkin_pie_slice", 3, 0.3F);
+        registerFood("fruit_salad", 6, 0.6F, false, "minecraft:regeneration", 100, 0, 1.0F);
+        registerFood("glow_berry_custard", 7, 0.6F, true, "minecraft:glowing", 100, 0, 1.0F);
+        registerFood("mixed_salad", 6, 0.6F, false, "minecraft:regeneration", 100, 0, 1.0F);
+        registerFood("nether_salad", 5, 0.4F, false, "minecraft:nausea", 240, 0, 0.3F);
+        registerFood("barbecue_stick", 8, 0.9F);
+        registerFood("egg_sandwich", 8, 0.8F);
+        registerFood("chicken_sandwich", 10, 0.8F);
+        registerFood("hamburger", 11, 0.8F);
+        registerFood("bacon_sandwich", 10, 0.8F);
+        registerFood("mutton_wrap", 10, 0.8F);
+        registerFood("dumplings", 8, 0.8F);
+        registerFood("stuffed_potato", 10, 0.7F);
+        registerFood("cabbage_rolls", 5, 0.5F);
+        registerFood("salmon_roll", 7, 0.6F);
+        registerFood("cod_roll", 7, 0.6F);
+        registerFood("kelp_roll", 12, 0.6F);
+        registerFood("kelp_roll_slice", 6, 0.5F);
+        registerFood("cooked_rice", 6, 0.4F, false, "farmersdelight:comfort", BRIEF_DURATION, 0, 1.0F);
+        registerFood("bone_broth", 8, 0.7F, false, "farmersdelight:comfort", SHORT_DURATION, 0, 1.0F);
+        registerFood("beef_stew", 12, 0.8F, false, "farmersdelight:comfort", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("vegetable_soup", 12, 0.8F, false, "farmersdelight:comfort", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("fish_stew", 12, 0.8F, false, "farmersdelight:comfort", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("chicken_soup", 14, 0.75F, false, "farmersdelight:comfort", LONG_DURATION, 0, 1.0F);
+        registerFood("fried_rice", 14, 0.75F, false, "farmersdelight:comfort", LONG_DURATION, 0, 1.0F);
+        registerFood("pumpkin_soup", 14, 0.75F, false, "farmersdelight:comfort", LONG_DURATION, 0, 1.0F);
+        registerFood("baked_cod_stew", 14, 0.75F, false, "farmersdelight:comfort", LONG_DURATION, 0, 1.0F);
+        registerFood("noodle_soup", 14, 0.75F, false, "farmersdelight:comfort", LONG_DURATION, 0, 1.0F);
+        registerFood("bacon_and_eggs", 10, 0.6F, false, "farmersdelight:nourishment", SHORT_DURATION, 0, 1.0F);
+        registerFood("ratatouille", 10, 0.6F, false, "farmersdelight:nourishment", SHORT_DURATION, 0, 1.0F);
+        registerFood("steak_and_potatoes", 12, 0.8F, false, "farmersdelight:nourishment", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("pasta_with_meatballs", 12, 0.8F, false, "farmersdelight:nourishment", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("pasta_with_mutton_chop", 12, 0.8F, false, "farmersdelight:nourishment", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("mushroom_rice", 12, 0.8F, false, "farmersdelight:nourishment", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("grilled_salmon", 14, 0.75F, false, "farmersdelight:nourishment", MEDIUM_DURATION, 0, 1.0F);
+        registerFood("roasted_mutton_chops", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerFood("vegetable_noodles", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerFood("squid_ink_pasta", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerFood("roast_chicken", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerFood("stuffed_pumpkin", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerFood("honey_glazed_ham", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerFood("shepherds_pie", 14, 0.75F, false, "farmersdelight:nourishment", LONG_DURATION, 0, 1.0F);
+        registerDrink("milk_bottle", 4, 0.4F, false, null, 0, 0, 0.0F,
+                ItemDrinkableTooltip.DrinkEffect.CLEAR_ONE, "farmersdelight.tooltip.milk_bottle");
+        registerDrink("hot_cocoa", 4, 0.4F, false, null, 0, 0, 0.0F,
+                ItemDrinkableTooltip.DrinkEffect.CLEAR_ONE_HARMFUL, "farmersdelight.tooltip.hot_cocoa");
+        registerDrink("melon_juice", 4, 0.4F, false, null, 0, 0, 0.0F,
+                ItemDrinkableTooltip.DrinkEffect.HEAL_MINOR, "farmersdelight.tooltip.melon_juice");
+        registerFood("tomato_sauce", 4, 0.4F);
 
         registerKnife("flint_knife", Item.ToolMaterial.WOOD);
         registerKnife("iron_knife", Item.ToolMaterial.IRON);
@@ -119,7 +209,24 @@ public final class ModItems {
     }
 
     private static Item registerFood(String path, int amount, float saturation) {
-        return register(path, new ItemFood(amount, saturation, false));
+        return registerFood(path, amount, saturation, false, null, 0, 0, 0.0F);
+    }
+
+    private static Item registerFood(String path, int amount, float saturation, boolean alwaysEdible, String effectId, int duration,
+                                     int amplifier, float chance, String... extraTooltipKeys) {
+        ItemFoodTooltip item = new ItemFoodTooltip(amount, saturation, false,
+                effectId == null ? null : new ResourceLocation(effectId), duration, amplifier, chance, extraTooltipKeys);
+        if (alwaysEdible) {
+            item.setAlwaysEdible();
+        }
+        return register(path, item);
+    }
+
+    private static Item registerDrink(String path, int amount, float saturation, boolean alwaysEdible, String effectId, int duration,
+                                      int amplifier, float chance, ItemDrinkableTooltip.DrinkEffect drinkEffect,
+                                      String... extraTooltipKeys) {
+        return register(path, new ItemDrinkableTooltip(amount, saturation, alwaysEdible,
+                effectId == null ? null : new ResourceLocation(effectId), duration, amplifier, chance, drinkEffect, extraTooltipKeys));
     }
 
     private static Item registerKnife(String path, Item.ToolMaterial material) {

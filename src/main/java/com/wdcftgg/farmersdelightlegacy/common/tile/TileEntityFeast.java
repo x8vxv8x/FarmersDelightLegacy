@@ -50,7 +50,13 @@ public class TileEntityFeast extends TileEntity {
             markDirty();
         }
 
-        // Feast 的 servings 仅由 TileEntity 持久化，触发一次客户端更新保证重载后显示同步。
+        IBlockState updatedState = state.withProperty(feast.getServingsProperty(), clampedServings);
+        if (state != updatedState) {
+            this.world.setBlockState(this.pos, updatedState, 3);
+            state = updatedState;
+        }
+
+        // Feast 的 servings 需要同步到方块状态，保证掉落和显示都使用同一份数据。
         this.world.notifyBlockUpdate(this.pos, state, state, 3);
     }
 
@@ -96,6 +102,11 @@ public class TileEntityFeast extends TileEntity {
             IBlockState state = this.world.getBlockState(this.pos);
             this.world.notifyBlockUpdate(this.pos, state, state, 3);
         }
+    }
+
+    @Override
+    public boolean shouldRefresh(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos, IBlockState oldState, IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
     }
 }
 

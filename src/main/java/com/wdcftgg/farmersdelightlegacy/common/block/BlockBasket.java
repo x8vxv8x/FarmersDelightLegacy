@@ -84,7 +84,7 @@ public class BlockBasket extends BlockDirectional implements ITileEntityProvider
 
     public BlockBasket() {
         super(Material.WOOD);
-        this.setHardness(0.8F);
+        this.setHardness(1.5F);
         this.setResistance(1.5F);
         this.setSoundType(SoundType.WOOD);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.UP).withProperty(ENABLED, true));
@@ -149,7 +149,7 @@ public class BlockBasket extends BlockDirectional implements ITileEntityProvider
 
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        EnumFacing placedFacing = EnumFacing.getDirectionFromEntityLiving(pos, placer).getOpposite();
+        EnumFacing placedFacing = EnumFacing.getDirectionFromEntityLiving(pos, placer);
         return this.getDefaultState().withProperty(FACING, placedFacing).withProperty(ENABLED, !worldIn.isBlockPowered(pos));
     }
 

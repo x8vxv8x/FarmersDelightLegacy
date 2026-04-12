@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class BlockPie extends Block {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
     public static final PropertyInteger BITES = PropertyInteger.create("bites", 0, 3);
-    private static final AxisAlignedBB PIE_SHAPE = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.5D, 0.9375D);
+    private static final AxisAlignedBB PIE_SHAPE = new AxisAlignedBB(0.125D, 0.0D, 0.125D, 0.875D, 0.25D, 0.875D);
 
     private final ResourceLocation sliceItemId;
 

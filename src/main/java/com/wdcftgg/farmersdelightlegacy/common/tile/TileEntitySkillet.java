@@ -42,6 +42,15 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
             ItemStack stored = getStoredStack();
             if (stored.isEmpty()) {
                 this.cookingTime = 0;
+                this.cookingTimeTotal = 0;
+                return;
+            }
+
+            if (this.cookingTimeTotal <= 0) {
+                refreshCookingRecipeState();
+            }
+            if (this.cookingTimeTotal <= 0) {
+                this.cookingTime = 0;
                 return;
             }
 
@@ -66,6 +75,7 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
                 if (this.itemStacks.get(0).getCount() <= 0) {
                     this.itemStacks.set(0, ItemStack.EMPTY);
                 }
+                refreshCookingRecipeState();
                 markDirty();
             }
         } else if (this.cookingTime > 0) {
@@ -120,6 +130,7 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
         this.skilletStack = stack.copy();
         this.skilletStack.setCount(1);
         this.fireAspectLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, this.skilletStack);
+        refreshCookingRecipeState();
         markDirty();
     }
 
@@ -200,6 +211,7 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
         if (!stack.isEmpty() && stack.getCount() > this.getInventoryStackLimit()) {
             stack.setCount(this.getInventoryStackLimit());
         }
+        refreshCookingRecipeState();
         markDirty();
     }
 
@@ -260,6 +272,27 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
         this.cookingTimeTotal = 0;
     }
 
+    private void refreshCookingRecipeState() {
+        ItemStack stored = this.itemStacks.get(0);
+        if (stored.isEmpty()) {
+            this.cookingTime = 0;
+            this.cookingTimeTotal = 0;
+            return;
+        }
+
+        CampfireCookingRecipe recipe = CampfireCookingRecipeManager.findRecipe(stored);
+        if (recipe == null) {
+            this.cookingTime = 0;
+            this.cookingTimeTotal = 0;
+            return;
+        }
+
+        this.cookingTimeTotal = BlockSkillet.getSkilletCookingTime(recipe.getCookingTime(), this.fireAspectLevel);
+        if (this.cookingTime > this.cookingTimeTotal) {
+            this.cookingTime = this.cookingTimeTotal;
+        }
+    }
+
     @Override
     public String getName() {
         return "container.farmersdelight.skillet";
@@ -316,6 +349,7 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
             this.skilletStack = ItemStack.EMPTY;
             this.fireAspectLevel = 0;
         }
+        refreshCookingRecipeState();
     }
 
     @Override
