@@ -3,7 +3,7 @@
     "minecraft:saddle"
   ],
   "tool": {
-    "tag": "forge:shears"
+    "tag": "ore:toolShears"
   },
   "result": [
     {

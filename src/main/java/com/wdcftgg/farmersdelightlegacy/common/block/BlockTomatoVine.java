@@ -1,5 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
+import com.wdcftgg.farmersdelightlegacy.common.advancement.ModAdvancements;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
 import net.minecraft.block.Block;
@@ -21,6 +22,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.common.ForgeHooks;
 
 import java.util.Random;
 
@@ -98,6 +101,9 @@ public class BlockTomatoVine extends BlockCrops {
             }
 
             worldIn.playSound(null, pos, SoundEvents.BLOCK_GRASS_BREAK, SoundCategory.BLOCKS, 1.0F, 0.9F + worldIn.rand.nextFloat() * 0.2F);
+            if (state.getValue(ROPELOGGED) && playerIn instanceof net.minecraft.entity.player.EntityPlayerMP) {
+                ModAdvancements.HARVEST_ROPELOGGED_TOMATO.trigger((net.minecraft.entity.player.EntityPlayerMP) playerIn);
+            }
             worldIn.setBlockState(pos, state.withProperty(this.getAgeProperty(), 0), 2);
         }
 
@@ -106,9 +112,34 @@ public class BlockTomatoVine extends BlockCrops {
 
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        super.updateTick(worldIn, pos, state, rand);
-        if (!worldIn.isRemote && worldIn.getLightFromNeighbors(pos) >= 9) {
-            attemptRopeClimb(worldIn, pos, rand);
+        if (!this.canBlockStay(worldIn, pos, state)) {
+            boolean ropelogged = state.getValue(ROPELOGGED);
+            worldIn.destroyBlock(pos, true);
+            if (ropelogged) {
+                worldIn.setBlockState(pos, ModBlocks.ROPE.getDefaultState(), 3);
+            }
+            return;
+        }
+
+        if (!worldIn.isAreaLoaded(pos, 1)) {
+            return;
+        }
+
+        if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
+            int age = this.getAge(state);
+            if (age < this.getMaxAge()) {
+                float growthChance = getGrowthChance(this, worldIn, pos);
+                if (ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int) (25.0F / growthChance) + 1) == 0)) {
+                    IBlockState grownState = state.withProperty(this.getAgeProperty(), age + 1);
+                    worldIn.setBlockState(pos, grownState, 2);
+                    ForgeHooks.onCropsGrowPost(worldIn, pos, state, grownState);
+                    state = grownState;
+                }
+            }
+
+            if (!worldIn.isRemote) {
+                attemptRopeClimb(worldIn, pos, rand);
+            }
         }
     }
 
@@ -144,6 +175,13 @@ public class BlockTomatoVine extends BlockCrops {
     }
 
     @Override
+    public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, net.minecraft.entity.Entity entityIn) {
+        if (state.getValue(ROPELOGGED) && entityIn instanceof EntityLivingBase) {
+            BlockRope.applyClimbingMotion((EntityLivingBase) entityIn);
+        }
+    }
+
+    @Override
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
         if (state.getValue(ROPELOGGED)) {
             IBlockState belowState = worldIn.getBlockState(pos.down());
@@ -157,10 +195,8 @@ public class BlockTomatoVine extends BlockCrops {
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!this.canBlockStay(worldIn, pos, state)) {
-            boolean ropelogged = state.getValue(ROPELOGGED);
-            worldIn.destroyBlock(pos, true);
-            if (ropelogged) {
-                worldIn.setBlockState(pos, ModBlocks.ROPE.getDefaultState(), 3);
+            if (!worldIn.isRemote) {
+                worldIn.scheduleUpdate(pos, this, 1);
             }
             return;
         }
@@ -177,7 +213,7 @@ public class BlockTomatoVine extends BlockCrops {
     }
 
     @Override
-    protected boolean canSustainBush(IBlockState state) {
-        return super.canSustainBush(state) || state.getBlock() == ModBlocks.RICH_SOIL_FARMLAND;
+    public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
+        return EnumPlantType.Crop;
     }
 }

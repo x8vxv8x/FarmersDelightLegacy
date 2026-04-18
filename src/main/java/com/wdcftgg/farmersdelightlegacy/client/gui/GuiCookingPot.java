@@ -5,7 +5,12 @@ import com.wdcftgg.farmersdelightlegacy.common.inventory.ContainerCookingPot;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCookingPot;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import java.util.List;
 
 public class GuiCookingPot extends GuiContainer {
 
@@ -40,6 +45,24 @@ public class GuiCookingPot extends GuiContainer {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        Slot mealSlot = this.inventorySlots.inventorySlots.get(6);
+        int localMouseX = mouseX - this.guiLeft;
+        int localMouseY = mouseY - this.guiTop;
+        boolean hoveringMealSlot = localMouseX >= mealSlot.xPos && localMouseX < mealSlot.xPos + 16
+                && localMouseY >= mealSlot.yPos && localMouseY < mealSlot.yPos + 16;
+        if (hoveringMealSlot && mealSlot.getHasStack()) {
+            List<String> tooltipLines = this.getItemToolTip(mealSlot.getStack());
+            ItemStack container = this.tileEntityCookingPot.getContainer();
+            if (!container.isEmpty()) {
+                String message = new TextComponentTranslation("farmersdelight.container.cooking_pot.served_on", container.getDisplayName())
+                        .getFormattedText();
+                tooltipLines.add(message);
+            }
+            this.drawHoveringText(tooltipLines, mouseX, mouseY);
+            return;
+        }
+
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 

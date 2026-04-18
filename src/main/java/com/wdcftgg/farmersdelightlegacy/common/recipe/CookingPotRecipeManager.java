@@ -1,28 +1,19 @@
 package com.wdcftgg.farmersdelightlegacy.common.recipe;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class CookingPotRecipeManager {
 
-    private static final Gson GSON = new Gson();
-    private static final String RECIPES_BASE = "assets/farmersdelight/fd_recipes/cooking_pot/";
-    private static final String RECIPES_INDEX = RECIPES_BASE + "_index.json";
+    private static final float DEFAULT_RECIPE_EXPERIENCE = 0.35F;
 
     private static final List<CookingPotRecipe> RECIPES = new ArrayList<>();
     private static boolean loaded;
@@ -80,22 +71,9 @@ public final class CookingPotRecipeManager {
     }
 
     private static void loadJsonRecipes() {
-        JsonArray indexArray = readJsonArray(RECIPES_INDEX);
-        if (indexArray == null) {
-            return;
-        }
-
-        for (JsonElement indexElement : indexArray) {
-            if (!indexElement.isJsonPrimitive()) {
-                continue;
-            }
-
-            String recipePath = indexElement.getAsString();
-            JsonObject recipeJson = readJsonObject(RECIPES_BASE + recipePath);
-            if (recipeJson == null) {
-                continue;
-            }
-
+        for (RecipeResourceScanner.RecipeJsonResource recipeResource : RecipeResourceScanner.scan("cooking_pot")) {
+            JsonObject recipeJson = recipeResource.getJsonObject();
+            String sourceModId = recipeResource.getModId();
             JsonArray ingredientsJson = recipeJson.getAsJsonArray("ingredients");
             JsonObject resultJson = recipeJson.getAsJsonObject("result");
             if (ingredientsJson == null || resultJson == null) {
@@ -121,6 +99,7 @@ public final class CookingPotRecipeManager {
             String resultItem = resultJson.has("item") ? resultJson.get("item").getAsString() : "";
             int resultCount = resultJson.has("count") ? resultJson.get("count").getAsInt() : 1;
             int cookTime = recipeJson.has("cookingtime") ? Math.max(1, recipeJson.get("cookingtime").getAsInt()) : 200;
+            float experience = recipeJson.has("experience") ? Math.max(0.0F, recipeJson.get("experience").getAsFloat()) : DEFAULT_RECIPE_EXPERIENCE;
             ItemStack outputContainer = ItemStack.EMPTY;
             boolean hasContainerDefinition = recipeJson.has("container");
             if (recipeJson.has("container") && recipeJson.get("container").isJsonObject()) {
@@ -128,16 +107,18 @@ public final class CookingPotRecipeManager {
                 String containerItemPath = containerJson.has("item") ? containerJson.get("item").getAsString() : "";
                 int containerCount = containerJson.has("count") ? Math.max(1, containerJson.get("count").getAsInt()) : 1;
                 if (!containerItemPath.isEmpty()) {
-                    outputContainer = stackOf(containerItemPath, containerCount);
+                    outputContainer = stackOf(containerItemPath, containerCount, sourceModId);
                 }
             }
             if (!resultItem.isEmpty()) {
-                addRecipe(ingredients.toArray(new String[0]), stackOf(resultItem, Math.max(1, resultCount)), outputContainer, cookTime, hasContainerDefinition);
+                addRecipe(ingredients.toArray(new String[0]), stackOf(resultItem, Math.max(1, resultCount), sourceModId), outputContainer,
+                        cookTime, experience, hasContainerDefinition, sourceModId);
             }
         }
     }
 
-    private static void addRecipe(String[] ingredientPaths, ItemStack resultStack, ItemStack outputContainer, int cookTime, boolean hasContainerDefinition) {
+    private static void addRecipe(String[] ingredientPaths, ItemStack resultStack, ItemStack outputContainer,
+                                  int cookTime, float experience, boolean hasContainerDefinition, String defaultNamespace) {
         if (resultStack.isEmpty()) {
             return;
         }
@@ -157,16 +138,16 @@ public final class CookingPotRecipeManager {
                 continue;
             }
 
-            Item ingredientItem = itemOf(ingredientPath);
+            Item ingredientItem = itemOf(ingredientPath, defaultNamespace);
             if (ingredientItem == null) {
                 return;
             }
             ingredients.add(CookingPotRecipe.IngredientEntry.forItem(ingredientItem));
         }
-        RECIPES.add(new CookingPotRecipe(ingredients, resultStack, outputContainer, cookTime, hasContainerDefinition));
+        RECIPES.add(new CookingPotRecipe(ingredients, resultStack, outputContainer, cookTime, experience, hasContainerDefinition));
     }
 
-    private static Item itemOf(String path) {
+    private static Item itemOf(String path, String defaultNamespace) {
         if (path == null || path.isEmpty()) {
             return null;
         }
@@ -174,43 +155,17 @@ public final class CookingPotRecipeManager {
         if (path.contains(":")) {
             itemId = new ResourceLocation(path);
         } else {
-            itemId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, path);
+            itemId = new ResourceLocation(defaultNamespace, path);
         }
         return ForgeRegistries.ITEMS.getValue(itemId);
     }
 
-    private static ItemStack stackOf(String path, int count) {
-        Item item = itemOf(path);
+    private static ItemStack stackOf(String path, int count, String defaultNamespace) {
+        Item item = itemOf(path, defaultNamespace);
         if (item == null) {
             return ItemStack.EMPTY;
         }
         return new ItemStack(item, count);
-    }
-
-    private static JsonArray readJsonArray(String classpathPath) {
-        try (InputStream inputStream = CookingPotRecipeManager.class.getClassLoader().getResourceAsStream(classpathPath)) {
-            if (inputStream == null) {
-                return null;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return GSON.fromJson(reader, JsonArray.class);
-            }
-        } catch (IOException ignored) {
-            return null;
-        }
-    }
-
-    private static JsonObject readJsonObject(String classpathPath) {
-        try (InputStream inputStream = CookingPotRecipeManager.class.getClassLoader().getResourceAsStream(classpathPath)) {
-            if (inputStream == null) {
-                return null;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return GSON.fromJson(reader, JsonObject.class);
-            }
-        } catch (IOException ignored) {
-            return null;
-        }
     }
 }
 

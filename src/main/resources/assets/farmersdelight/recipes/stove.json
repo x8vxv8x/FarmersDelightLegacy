@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "campfire"
+      }
+    }
+  ],
+  "pattern": [
+    "iii",
+    "BTB",
+    "BCB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:brick_block"
+    },
+    "C": {
+      "item": "minecraft:coal",
+      "data": 1
+    },
+    "T": {
+      "item": "minecraft:torch"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    }
+  },
+  "result": {
+    "item": "farmersdelight:stove"
+  }
+}

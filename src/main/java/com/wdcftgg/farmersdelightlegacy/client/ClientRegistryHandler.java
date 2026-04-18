@@ -7,6 +7,7 @@ import com.wdcftgg.farmersdelightlegacy.client.render.TileEntityCanvasSignRender
 import com.wdcftgg.farmersdelightlegacy.client.render.TileEntityCuttingBoardRenderer;
 import com.wdcftgg.farmersdelightlegacy.client.render.TileEntitySkilletRenderer;
 import com.wdcftgg.farmersdelightlegacy.client.render.TileEntityStoveRenderer;
+import com.wdcftgg.farmersdelightlegacy.common.entity.EntityRottenTomato;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockCanvasHangingSign;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockCanvasWallHangingSign;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
@@ -22,6 +23,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -29,6 +31,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -39,6 +42,7 @@ public final class ClientRegistryHandler {
 
     private static boolean tileRenderersBound;
     private static boolean particleFactoriesBound;
+    private static boolean entityRenderersBound;
 
     private ClientRegistryHandler() {
     }
@@ -51,6 +55,13 @@ public final class ClientRegistryHandler {
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityStove.class, new TileEntityStoveRenderer());
             ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCanvasSign.class, new TileEntityCanvasSignRenderer());
             tileRenderersBound = true;
+        }
+
+        if (!entityRenderersBound) {
+            RenderingRegistry.registerEntityRenderingHandler(EntityRottenTomato.class,
+                    renderManager -> new RenderSnowball<>(renderManager, ModItems.ITEMS.get("rotten_tomato"),
+                            net.minecraft.client.Minecraft.getMinecraft().getRenderItem()));
+            entityRenderersBound = true;
         }
 
         for (Block block : ModBlocks.BLOCKS.values()) {

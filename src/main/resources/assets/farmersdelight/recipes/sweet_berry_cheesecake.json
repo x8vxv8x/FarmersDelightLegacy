@@ -16,7 +16,7 @@
     },
     "s": {
       "type": "forge:ore_dict",
-      "ore": "listAllberry"
+      "ore": "cropSweetBerry"
     }
   },
   "result": {

@@ -146,7 +146,7 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
     }
 
     private boolean isHeated() {
-        return HeatSourceHelper.isDirectHeatSource(this.world, this.pos.down());
+        return HeatSourceHelper.isCookwareHeated(this.world, this.pos);
     }
 
     private void updateSupportState() {
@@ -155,7 +155,7 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
             return;
         }
 
-        boolean support = HeatSourceHelper.isVisualSupportHeatSource(this.world, this.pos.down());
+        boolean support = HeatSourceHelper.hasVisualSupportForCookware(this.world, this.pos);
         if (state.getValue(BlockSkillet.SUPPORT) != support) {
             this.world.setBlockState(this.pos, state.withProperty(BlockSkillet.SUPPORT, support), 2);
         }

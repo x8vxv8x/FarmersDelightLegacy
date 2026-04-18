@@ -1,9 +1,11 @@
 package com.wdcftgg.farmersdelightlegacy.client.jei;
 
 import com.wdcftgg.farmersdelightlegacy.client.gui.GuiCookingPot;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemCookingPot;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.*;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
+import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCookingPot;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -11,12 +13,15 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @JEIPlugin
 public final class FarmersDelightJeiPlugin implements IModPlugin {
@@ -40,6 +45,8 @@ public final class FarmersDelightJeiPlugin implements IModPlugin {
         registry.addRecipes(buildCookingPotRecipes(), JeiUids.COOKING_POT);
         registry.addRecipes(buildCuttingBoardRecipes(), JeiUids.CUTTING_BOARD);
         registry.addRecipes(buildCampfireRecipes(), JeiUids.CAMPFIRE);
+        registry.handleRecipes(SpecialCraftingJeiRecipe.class, recipe -> recipe, VanillaRecipeCategoryUid.CRAFTING);
+        registry.addRecipes(buildSpecialCraftingRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.COOKING_POT), JeiUids.COOKING_POT);
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.CUTTING_BOARD), JeiUids.CUTTING_BOARD);
@@ -134,6 +141,65 @@ public final class FarmersDelightJeiPlugin implements IModPlugin {
         for (CampfireCookingRecipe recipe : CampfireCookingRecipeManager.getRecipes()) {
             result.add(CampfireJeiRecipe.of(recipe));
         }
+        return result;
+    }
+
+    private static List<SpecialCraftingJeiRecipe> buildSpecialCraftingRecipes() {
+        List<SpecialCraftingJeiRecipe> recipes = new ArrayList<>();
+        addWaterDoughRecipe(recipes);
+        addFoodServingRecipes(recipes);
+        return recipes;
+    }
+
+    private static void addWaterDoughRecipe(List<SpecialCraftingJeiRecipe> recipes) {
+        ItemStack wheatDough = stackFromItemName("wheat_dough");
+        if (wheatDough.isEmpty()) {
+            return;
+        }
+
+        List<List<ItemStack>> inputs = new ArrayList<>();
+        inputs.add(singleStackList(new ItemStack(Items.WHEAT)));
+        inputs.add(singleStackList(new ItemStack(Items.WATER_BUCKET)));
+        recipes.add(new SpecialCraftingJeiRecipe(inputs, wheatDough));
+    }
+
+    private static void addFoodServingRecipes(List<SpecialCraftingJeiRecipe> recipes) {
+        Map<String, SpecialCraftingJeiRecipe> uniqueRecipes = new LinkedHashMap<>();
+
+        for (CookingPotRecipe cookingPotRecipe : CookingPotRecipeManager.getRecipes()) {
+            ItemStack mealStack = cookingPotRecipe.getResultStack().copy();
+            if (mealStack.isEmpty()) {
+                continue;
+            }
+
+            ItemStack potStack = new ItemStack(ModBlocks.COOKING_POT);
+            ItemStack configuredContainer = cookingPotRecipe.getOutputContainer();
+            boolean useDefaultContainer = !cookingPotRecipe.hasContainerDefinition();
+            TileEntityCookingPot.writeMealToItem(potStack, mealStack, configuredContainer, useDefaultContainer);
+
+            ItemStack servingContainer = ItemCookingPot.inferContainer(potStack, mealStack);
+            if (servingContainer.isEmpty()) {
+                continue;
+            }
+
+            ItemStack output = mealStack.copy();
+            output.setCount(1);
+
+            List<List<ItemStack>> inputs = new ArrayList<>();
+            inputs.add(singleStackList(potStack));
+            inputs.add(singleStackList(servingContainer));
+
+            String key = output.getItem().getRegistryName() + "|" + output.getMetadata() + "|"
+                    + servingContainer.getItem().getRegistryName() + "|" + servingContainer.getMetadata();
+            uniqueRecipes.putIfAbsent(key, new SpecialCraftingJeiRecipe(inputs, output));
+        }
+
+        recipes.addAll(uniqueRecipes.values());
+    }
+
+    private static List<ItemStack> singleStackList(ItemStack stack) {
+        List<ItemStack> result = new ArrayList<>(1);
+        result.add(stack);
         return result;
     }
 }

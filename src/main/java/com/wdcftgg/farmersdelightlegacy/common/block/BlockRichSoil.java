@@ -7,13 +7,19 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.common.IPlantable;
+
+import java.util.Random;
 
 public class BlockRichSoil extends Block {
     public BlockRichSoil() {
@@ -21,6 +27,7 @@ public class BlockRichSoil extends Block {
         this.setHardness(0.7F);
         this.setResistance(2.7F);
         this.setSoundType(SoundType.GROUND);
+        this.setTickRandomly(true);
     }
 
     @Override
@@ -46,5 +53,32 @@ public class BlockRichSoil extends Block {
                 (soundType.getVolume() + 1.0F) * 0.5F, soundType.getPitch() * 0.8F);
         heldItem.damageItem(1, playerIn);
         return true;
+    }
+
+    @Override
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (worldIn.isRemote) {
+            return;
+        }
+
+        BlockPos abovePos = pos.up();
+        Block aboveBlock = worldIn.getBlockState(abovePos).getBlock();
+        if (aboveBlock == Blocks.BROWN_MUSHROOM) {
+            worldIn.setBlockState(abovePos, ModBlocks.BROWN_MUSHROOM_COLONY.getDefaultState(), 3);
+            return;
+        }
+        if (aboveBlock == Blocks.RED_MUSHROOM) {
+            worldIn.setBlockState(abovePos, ModBlocks.RED_MUSHROOM_COLONY.getDefaultState(), 3);
+        }
+    }
+
+    @Override
+    public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
+        if (direction != EnumFacing.UP) {
+            return false;
+        }
+
+        EnumPlantType plantType = plantable.getPlantType(world, pos.up());
+        return plantType != EnumPlantType.Crop && plantType != EnumPlantType.Nether && plantType != EnumPlantType.Water;
     }
 }

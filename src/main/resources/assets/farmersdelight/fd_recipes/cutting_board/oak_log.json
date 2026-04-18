@@ -1,4 +1,7 @@
 {
+  "conditions": {
+    "mod_not_loaded": "futuremc"
+  },
   "ingredients": [
     {
       "item": "minecraft:log",

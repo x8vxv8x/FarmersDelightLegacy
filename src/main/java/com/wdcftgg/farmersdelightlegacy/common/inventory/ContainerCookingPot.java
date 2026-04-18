@@ -62,6 +62,12 @@ public class ContainerCookingPot extends Container {
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
+
+            @Override
+            public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
+                tileEntityCookingPot.awardExperience(thePlayer, stack.getCount());
+                return super.onTake(thePlayer, stack);
+            }
         });
 
         for (int row = 0; row < 3; row++) {
@@ -95,6 +101,7 @@ public class ContainerCookingPot extends Container {
                     return ItemStack.EMPTY;
                 }
                 slot.onSlotChange(slotStack, itemStack);
+                slot.onTake(playerIn, slotStack);
             } else if (index < tileSlotCount) {
                 if (!this.mergeItemStack(slotStack, tileSlotCount, this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;

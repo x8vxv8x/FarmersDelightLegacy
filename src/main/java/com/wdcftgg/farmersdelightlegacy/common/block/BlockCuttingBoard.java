@@ -1,6 +1,7 @@
 package com.wdcftgg.farmersdelightlegacy.common.block;
 
 import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import com.wdcftgg.farmersdelightlegacy.common.advancement.ModAdvancements;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CuttingBoardRecipeManager;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModSounds;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityCuttingBoard;
@@ -14,6 +15,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.*;
 import net.minecraft.tileentity.TileEntity;
@@ -137,6 +139,9 @@ public class BlockCuttingBoard extends BlockHorizontal implements ITileEntityPro
                     heldStack.damageItem(1, playerIn);
                     worldIn.playSound(null, pos, ModSounds.CUTTING_BOARD_KNIFE, SoundCategory.BLOCKS, 0.9F, 1.0F);
                     spawnCuttingParticles(worldIn, pos, particleStack, 5);
+                    if (playerIn instanceof net.minecraft.entity.player.EntityPlayerMP) {
+                        ModAdvancements.USE_CUTTING_BOARD.trigger((net.minecraft.entity.player.EntityPlayerMP) playerIn);
+                    }
                 }
                 return true;
             }
@@ -286,7 +291,10 @@ public class BlockCuttingBoard extends BlockHorizontal implements ITileEntityPro
             if (!world.isRemote) {
                 ItemStack toPlace = player.capabilities.isCreativeMode ? heldStack.copy() : heldStack;
                 if (cuttingBoard.carveToolOnBoard(toPlace)) {
-                    world.playSound(null, pos, net.minecraft.init.SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 1.0F, 0.8F);
+                    if (!player.capabilities.isCreativeMode) {
+                        heldStack.shrink(1);
+                    }
+                    world.playSound(null, pos, SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 1.0F, 0.8F);
                 }
             }
 

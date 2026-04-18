@@ -7,7 +7,8 @@ import net.minecraftforge.event.RegistryEvent;
 
 public final class ModSounds {
 
-    public static SoundEvent CABINET_OPEN;
+    public static SoundEvent CABINET_OPEN1;
+    public static SoundEvent CABINET_OPEN2;
     public static SoundEvent CABINET_CLOSE;
     public static SoundEvent STOVE_CRACKLE;
     public static SoundEvent COOKING_POT_BOIL;
@@ -17,12 +18,15 @@ public final class ModSounds {
     public static SoundEvent SKILLET_ADD_FOOD;
     public static SoundEvent SKILLET_ATTACK_STRONG;
     public static SoundEvent SKILLET_ATTACK_WEAK;
+    public static SoundEvent ROTTEN_TOMATO_THROW;
+    public static SoundEvent ROTTEN_TOMATO_HIT;
 
     private ModSounds() {
     }
 
     public static void registerAll(RegistryEvent.Register<SoundEvent> event) {
-        CABINET_OPEN = register(event, "block.cabinet.open");
+        CABINET_OPEN1 = register(event, "block.cabinet.open1");
+        CABINET_OPEN2 = register(event, "block.cabinet.open2");
         CABINET_CLOSE = register(event, "block.cabinet.close");
         STOVE_CRACKLE = register(event, "block.stove.crackle");
         COOKING_POT_BOIL = register(event, "block.cooking_pot.boil");
@@ -32,6 +36,8 @@ public final class ModSounds {
         SKILLET_ADD_FOOD = register(event, "block.skillet.add_food");
         SKILLET_ATTACK_STRONG = register(event, "item.skillet.attack.strong");
         SKILLET_ATTACK_WEAK = register(event, "item.skillet.attack.weak");
+        ROTTEN_TOMATO_THROW = register(event, "entity.rotten_tomato.throw");
+        ROTTEN_TOMATO_HIT = register(event, "entity.rotten_tomato.hit");
     }
 
     private static SoundEvent register(RegistryEvent.Register<SoundEvent> event, String soundPath) {

@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 /**
  * 直接热源判定回调接口。
  * <p>
- * 通过 {@link HeatSourceApi#registerDirectHeatSourcePredicate(IHeatSourcePredicate)} 注册后，
+ * 通过 {@link HeatSourceApi#registerDirectHeatSourcePredicate(String, IHeatSourcePredicate)} 注册后，
  * 可让外部模组将自定义方块纳入烹饪加热判定。
  */
 @FunctionalInterface

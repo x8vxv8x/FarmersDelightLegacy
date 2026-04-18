@@ -1,21 +1,23 @@
-## TemplateDevEnv
-_For Kotlin see [TemplateDevEnvKt](https://github.com/CleanroomMC/TemplateDevEnvKt)_
+# Farmer's Delight
 
-Template workspace for modding Minecraft 1.12.2. Licensed under MIT, it is made for public use.
+<a href="https://www.curseforge.com/minecraft/mc-mods/farmers-delight">
+  <img src="http://cf.way2muchnoise.eu/full_398521_downloads.svg" alt="Curseforge Downloads">
+</a>
+<br>
+<img src="https://i.imgur.com/gXOJZc1.png" width="50%">
 
-This template runs on **Java 25**, **Gradle 9.2.1** + **[RetroFuturaGradle](https://github.com/GTNewHorizons/RetroFuturaGradle) 2.0.2** + **Forge 14.23.5.2847**.
+### Overview
 
-With **coremod and mixin support** that is easy to configure.
+**Farmer's Delight** is a mod that gently expands upon farming and cooking in Minecraft.
 
-### Instructions:
+Using a simple cooking system and a few familiar ingredients, you'll be able to prepare a wide variety of **hearty meals**: from sandwiches to salads and stews, from beautiful desserts to mouth-watering feasts, no ingredient will be left behind in your kitchen!
 
-1. Click `use this template` at the top.
-2. Clone the repository that you have created with this template to your local machine.
-3. Make sure IDEA is using Java 25 for Gradle before you sync the project. Verify this by going to IDEA's `Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM`.
-4. Open the project folder in IDEA. When prompted, click "Load Gradle Project" as it detects the `build.gradle`, if you weren't prompted, right-click the project's `build.gradle` in IDEA, select `Link Gradle Project`, after completion, hit `Refresh All` in the gradle tab on the right.
-5. Run gradle tasks such as `runClient` and `runServer` in the IDEA gradle tab, or use the auto-imported run configurations like `1. Run Client`.
+It also introduces a rich set of utilities: a way to **improve the very soil** your crops grow in, a brand new kind of tool to **scavenge resources** with, cute **decorations** for your builds, and many blocks and items to help you on your adventure!
 
-### Notes:
-- Dependencies script in [gradle/scripts/dependencies.gradle](gradle/scripts/dependencies.gradle), explanations are commented in the file.
-- Publishing script in [gradle/scripts/publishing.gradle](gradle/scripts/publishing.gradle).
-- When writing Mixins on IntelliJ, it is advisable to use latest [MinecraftDev Fork for RetroFuturaGradle](https://github.com/eigenraven/MinecraftDev/releases).
+It's time to farm a little bit of everything!
+
+### Contributing
+
+Thank you for visiting the repository! If you'd like to contribute with the mod, feel free to check the wiki for more details, or take a look at the issues page!
+
+I am open to constructive feedback about the mod's code: if you spot any glaring mistakes in my code, and/or you know a better way to accomplish something, feel free to open an issue/PR about it. Any help is appreciated!

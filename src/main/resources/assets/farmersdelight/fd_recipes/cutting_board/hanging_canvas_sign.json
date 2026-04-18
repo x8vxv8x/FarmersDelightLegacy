@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    "ore:fdHangingCanvasSigns"
+  ],
+  "tool": "ore:toolAxe",
+  "result": [
+    {
+      "item": "farmersdelight:canvas",
+      "count": 1
+    }
+  ]
+}

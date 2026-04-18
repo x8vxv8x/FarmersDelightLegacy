@@ -13,7 +13,8 @@
     {
       "item": "minecraft:dye",
       "count": 2,
-      "chance": 0.5
+      "chance": 0.5,
+      "data": 5
     }
   ]
 }

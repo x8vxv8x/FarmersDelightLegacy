@@ -1,29 +1,20 @@
 package com.wdcftgg.farmersdelightlegacy.common.recipe;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModOreDictionary;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public final class CuttingBoardRecipeManager {
 
-    private static final Gson GSON = new Gson();
-    private static final String RECIPES_BASE = "assets/farmersdelight/fd_recipes/cutting_board/";
-    private static final String RECIPES_INDEX = RECIPES_BASE + "_index.json";
     private static final String DEFAULT_TOOL_TOKEN = "ore:toolKnife";
     private static final Map<String, String> TAG_TO_OREDICT = ModOreDictionary.getTagToOreDictMap();
 
@@ -67,7 +58,7 @@ public final class CuttingBoardRecipeManager {
             return false;
         }
         for (CuttingRecipeEntry recipeEntry : RECIPES) {
-            if (recipeEntry.toolMatcher.matches(toolStack)) {
+            if (recipeEntry.toolMatcher.matchesTool(toolStack)) {
                 return true;
             }
         }
@@ -128,69 +119,102 @@ public final class CuttingBoardRecipeManager {
     }
 
     private static void loadJsonRecipes() {
-        JsonArray indexArray = readJsonArray(RECIPES_INDEX);
-        if (indexArray == null) {
-            return;
-        }
-
-        for (JsonElement indexElement : indexArray) {
-            if (!indexElement.isJsonPrimitive()) {
-                continue;
-            }
-
-            String recipePath = indexElement.getAsString();
-            JsonObject recipeJson = readJsonObject(RECIPES_BASE + recipePath);
-            if (recipeJson == null) {
-                continue;
-            }
-
-            parseAndRegister(recipeJson);
+        for (RecipeResourceScanner.RecipeJsonResource recipeResource : RecipeResourceScanner.scan("cutting_board")) {
+            parseAndRegister(recipeResource.getJsonObject(), recipeResource.getModId());
         }
     }
 
-    private static void parseAndRegister(JsonObject recipeJson) {
-        IngredientMatcher inputMatcher = readInput(recipeJson);
-        IngredientMatcher toolMatcher = readTool(recipeJson);
-        List<ResultEntry> resultEntries = readResults(recipeJson);
+    private static void parseAndRegister(JsonObject recipeJson, String defaultNamespace) {
+        if (!passesConditions(recipeJson)) {
+            return;
+        }
+        IngredientMatcher inputMatcher = readInput(recipeJson, defaultNamespace);
+        IngredientMatcher toolMatcher = readTool(recipeJson, defaultNamespace);
+        List<ResultEntry> resultEntries = readResults(recipeJson, defaultNamespace);
         if (!inputMatcher.isValid() || !toolMatcher.isValid() || resultEntries.isEmpty()) {
             return;
         }
         RECIPES.add(new CuttingRecipeEntry(inputMatcher, toolMatcher, resultEntries));
     }
 
-    private static IngredientMatcher readInput(JsonObject recipeJson) {
+    private static boolean passesConditions(JsonObject recipeJson) {
+        if (!recipeJson.has("conditions") || !recipeJson.get("conditions").isJsonObject()) {
+            return true;
+        }
+
+        JsonObject conditionsObject = recipeJson.getAsJsonObject("conditions");
+        return matchesModCondition(conditionsObject.get("mod_loaded"), true)
+                && matchesModCondition(conditionsObject.get("mod_not_loaded"), false);
+    }
+
+    private static boolean matchesModCondition(JsonElement conditionElement, boolean expectedLoaded) {
+        if (conditionElement == null || conditionElement.isJsonNull()) {
+            return true;
+        }
+
+        List<String> modIds = new ArrayList<>();
+        collectConditionStrings(conditionElement, modIds);
+        for (String modId : modIds) {
+            if (Loader.isModLoaded(modId) != expectedLoaded) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void collectConditionStrings(JsonElement element, List<String> values) {
+        if (element == null || element.isJsonNull()) {
+            return;
+        }
+
+        if (element.isJsonPrimitive()) {
+            String value = element.getAsString();
+            if (!value.isEmpty()) {
+                values.add(value);
+            }
+            return;
+        }
+
+        if (element.isJsonArray()) {
+            for (JsonElement child : element.getAsJsonArray()) {
+                collectConditionStrings(child, values);
+            }
+        }
+    }
+
+    private static IngredientMatcher readInput(JsonObject recipeJson, String defaultNamespace) {
         if (recipeJson.has("ingredient")) {
-            IngredientMatcher ingredientMatcher = IngredientMatcher.fromJson(recipeJson.get("ingredient"));
+            IngredientMatcher ingredientMatcher = IngredientMatcher.fromJson(recipeJson.get("ingredient"), defaultNamespace);
             if (ingredientMatcher.isValid()) {
                 return ingredientMatcher;
             }
         }
         if (recipeJson.has("input") && recipeJson.get("input").isJsonPrimitive()) {
-            return IngredientMatcher.fromToken(recipeJson.get("input").getAsString());
+            return IngredientMatcher.fromToken(recipeJson.get("input").getAsString(), defaultNamespace);
         }
         if (recipeJson.has("ingredients") && recipeJson.get("ingredients").isJsonArray()) {
-            return IngredientMatcher.fromJson(recipeJson.get("ingredients"));
+            return IngredientMatcher.fromJson(recipeJson.get("ingredients"), defaultNamespace);
         }
         return IngredientMatcher.invalid();
     }
 
-    private static IngredientMatcher readTool(JsonObject recipeJson) {
+    private static IngredientMatcher readTool(JsonObject recipeJson, String defaultNamespace) {
         if (recipeJson.has("tool")) {
-            IngredientMatcher toolMatcher = IngredientMatcher.fromJson(recipeJson.get("tool"));
+            IngredientMatcher toolMatcher = IngredientMatcher.fromJson(recipeJson.get("tool"), defaultNamespace);
             if (toolMatcher.isValid()) {
                 return toolMatcher;
             }
         }
-        return IngredientMatcher.fromToken(DEFAULT_TOOL_TOKEN);
+        return IngredientMatcher.fromToken(DEFAULT_TOOL_TOKEN, defaultNamespace);
     }
 
-    private static List<ResultEntry> readResults(JsonObject recipeJson) {
+    private static List<ResultEntry> readResults(JsonObject recipeJson, String defaultNamespace) {
         List<ResultEntry> resultEntries = new ArrayList<>();
 
         if (recipeJson.has("output") && recipeJson.get("output").isJsonPrimitive()) {
             String outputPath = recipeJson.get("output").getAsString();
             int outputCount = recipeJson.has("count") ? Math.max(1, recipeJson.get("count").getAsInt()) : 1;
-            Item outputItem = itemOf(outputPath);
+            Item outputItem = itemOf(outputPath, defaultNamespace);
             if (outputItem != null) {
                 resultEntries.add(new ResultEntry(new ItemStack(outputItem, outputCount), 1.0F));
             }
@@ -202,13 +226,13 @@ public final class CuttingBoardRecipeManager {
             if (resultElement.isJsonArray()) {
                 JsonArray resultArray = resultElement.getAsJsonArray();
                 for (JsonElement element : resultArray) {
-                    ResultEntry entry = parseResultEntry(element);
+                    ResultEntry entry = parseResultEntry(element, defaultNamespace);
                     if (entry != null) {
                         resultEntries.add(entry);
                     }
                 }
             } else {
-                ResultEntry single = parseResultEntry(resultElement);
+                ResultEntry single = parseResultEntry(resultElement, defaultNamespace);
                 if (single != null) {
                     resultEntries.add(single);
                 }
@@ -218,7 +242,7 @@ public final class CuttingBoardRecipeManager {
         return resultEntries;
     }
 
-    private static ResultEntry parseResultEntry(JsonElement resultElement) {
+    private static ResultEntry parseResultEntry(JsonElement resultElement, String defaultNamespace) {
         if (resultElement == null || !resultElement.isJsonObject()) {
             return null;
         }
@@ -228,7 +252,7 @@ public final class CuttingBoardRecipeManager {
             return null;
         }
 
-        Item resultItem = itemOf(resultObject.get("item").getAsString());
+        Item resultItem = itemOf(resultObject.get("item").getAsString(), defaultNamespace);
         if (resultItem == null) {
             return null;
         }
@@ -286,7 +310,7 @@ public final class CuttingBoardRecipeManager {
         }
 
         private boolean matches(ItemStack inputStack, ItemStack toolStack) {
-            return inputMatcher.matches(inputStack) && toolMatcher.matches(toolStack);
+            return inputMatcher.matches(inputStack) && toolMatcher.matchesTool(toolStack);
         }
 
         private List<ItemStack> rollResults(Random random) {
@@ -342,42 +366,42 @@ public final class CuttingBoardRecipeManager {
             return new IngredientMatcher(Collections.<ItemStack>emptyList(), Collections.<String>emptyList());
         }
 
-        private static IngredientMatcher fromToken(String token) {
+        private static IngredientMatcher fromToken(String token, String defaultNamespace) {
             if (token == null || token.isEmpty()) {
                 return invalid();
             }
 
             List<ItemStack> itemStacks = new ArrayList<>();
             List<String> oreDictNames = new ArrayList<>();
-            addToken(token, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
+            addToken(token, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames, defaultNamespace);
             return new IngredientMatcher(itemStacks, oreDictNames);
         }
 
-        private static IngredientMatcher fromJson(JsonElement element) {
+        private static IngredientMatcher fromJson(JsonElement element, String defaultNamespace) {
             if (element == null || element.isJsonNull()) {
                 return invalid();
             }
 
             List<ItemStack> itemStacks = new ArrayList<>();
             List<String> oreDictNames = new ArrayList<>();
-            collectTokens(element, itemStacks, oreDictNames);
+            collectTokens(element, itemStacks, oreDictNames, defaultNamespace);
             return new IngredientMatcher(itemStacks, oreDictNames);
         }
 
-        private static void collectTokens(JsonElement element, List<ItemStack> itemStacks, List<String> oreDictNames) {
+        private static void collectTokens(JsonElement element, List<ItemStack> itemStacks, List<String> oreDictNames, String defaultNamespace) {
             if (element == null || element.isJsonNull()) {
                 return;
             }
 
             if (element.isJsonPrimitive()) {
-                addToken(element.getAsString(), OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
+                addToken(element.getAsString(), OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames, defaultNamespace);
                 return;
             }
 
             if (element.isJsonArray()) {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement child : array) {
-                    collectTokens(child, itemStacks, oreDictNames);
+                    collectTokens(child, itemStacks, oreDictNames, defaultNamespace);
                 }
                 return;
             }
@@ -392,23 +416,23 @@ public final class CuttingBoardRecipeManager {
                 if (jsonObject.has("data") && jsonObject.get("data").isJsonPrimitive()) {
                     metadata = Math.max(0, jsonObject.get("data").getAsInt());
                 }
-                addToken(jsonObject.get("item").getAsString(), metadata, itemStacks, oreDictNames);
+                addToken(jsonObject.get("item").getAsString(), metadata, itemStacks, oreDictNames, defaultNamespace);
             }
             if (jsonObject.has("tag") && jsonObject.get("tag").isJsonPrimitive()) {
                 String oreToken = tagToOreToken(jsonObject.get("tag").getAsString());
                 if (oreToken != null) {
-                    addToken(oreToken, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
+                    addToken(oreToken, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames, defaultNamespace);
                 }
             }
             if (jsonObject.has("action") && jsonObject.get("action").isJsonPrimitive()) {
                 String actionToken = actionToOreToken(jsonObject.get("action").getAsString());
                 if (actionToken != null) {
-                    addToken(actionToken, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames);
+                    addToken(actionToken, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames, defaultNamespace);
                 }
             }
         }
 
-        private static void addToken(String token, int metadata, List<ItemStack> itemStacks, List<String> oreDictNames) {
+        private static void addToken(String token, int metadata, List<ItemStack> itemStacks, List<String> oreDictNames, String defaultNamespace) {
             if (token == null || token.isEmpty()) {
                 return;
             }
@@ -421,7 +445,7 @@ public final class CuttingBoardRecipeManager {
                 return;
             }
 
-            Item item = itemOf(token);
+            Item item = itemOf(token, defaultNamespace);
             if (item != null) {
                 for (ItemStack candidate : itemStacks) {
                     if (candidate.getItem() == item && candidate.getMetadata() == metadata) {
@@ -465,6 +489,49 @@ public final class CuttingBoardRecipeManager {
                 }
             }
             return false;
+        }
+
+        private boolean matchesTool(ItemStack stack) {
+            if (stack.isEmpty()) {
+                return false;
+            }
+
+            if (matchesDirectItem(stack)) {
+                return true;
+            }
+
+            for (String oreName : oreDictNames) {
+                for (ItemStack oreStack : OreDictionary.getOres(oreName)) {
+                    if (isItemAndMetaMatch(oreStack, stack)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private boolean matchesDirectItem(ItemStack stack) {
+            for (ItemStack candidate : itemStacks) {
+                if (isItemAndMetaMatch(candidate, stack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean isItemAndMetaMatch(ItemStack candidate, ItemStack target) {
+            if (candidate.isEmpty() || target.isEmpty() || candidate.getItem() != target.getItem()) {
+                return false;
+            }
+
+            int candidateMeta = candidate.getMetadata();
+            if (candidateMeta == OreDictionary.WILDCARD_VALUE) {
+                return true;
+            }
+            if (target.isItemStackDamageable()) {
+                return true;
+            }
+            return candidateMeta == target.getMetadata();
         }
 
         private List<ItemStack> asStacks() {
@@ -514,7 +581,7 @@ public final class CuttingBoardRecipeManager {
     }
 
 
-    private static Item itemOf(String path) {
+    private static Item itemOf(String path, String defaultNamespace) {
         if (path == null || path.isEmpty()) {
             return null;
         }
@@ -523,35 +590,9 @@ public final class CuttingBoardRecipeManager {
         if (path.contains(":")) {
             itemId = new ResourceLocation(path);
         } else {
-            itemId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, path);
+            itemId = new ResourceLocation(defaultNamespace, path);
         }
         return ForgeRegistries.ITEMS.getValue(itemId);
-    }
-
-    private static JsonArray readJsonArray(String classpathPath) {
-        try (InputStream inputStream = CuttingBoardRecipeManager.class.getClassLoader().getResourceAsStream(classpathPath)) {
-            if (inputStream == null) {
-                return null;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return GSON.fromJson(reader, JsonArray.class);
-            }
-        } catch (IOException ignored) {
-            return null;
-        }
-    }
-
-    private static JsonObject readJsonObject(String classpathPath) {
-        try (InputStream inputStream = CuttingBoardRecipeManager.class.getClassLoader().getResourceAsStream(classpathPath)) {
-            if (inputStream == null) {
-                return null;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return GSON.fromJson(reader, JsonObject.class);
-            }
-        } catch (IOException ignored) {
-            return null;
-        }
     }
 }
 

@@ -2,11 +2,13 @@ package com.wdcftgg.farmersdelightlegacy.common.block;
 
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
 
 import java.util.Random;
 
@@ -35,10 +37,23 @@ public class BlockBuddingTomato extends BlockCrops {
 
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (!this.canBlockStay(worldIn, pos, state)) {
+            worldIn.destroyBlock(pos, true);
+            return;
+        }
         super.updateTick(worldIn, pos, state, rand);
         if (!worldIn.isRemote && this.getAge(state) >= this.getMaxAge()) {
             worldIn.setBlockState(pos, ModBlocks.TOMATOES.getDefaultState(), 3);
         }
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        if (!this.canBlockStay(worldIn, pos, state)) {
+            worldIn.destroyBlock(pos, true);
+            return;
+        }
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     }
 
     @Override
@@ -57,7 +72,7 @@ public class BlockBuddingTomato extends BlockCrops {
     }
 
     @Override
-    protected boolean canSustainBush(IBlockState state) {
-        return super.canSustainBush(state) || state.getBlock() == ModBlocks.RICH_SOIL_FARMLAND;
+    public EnumPlantType getPlantType(net.minecraft.world.IBlockAccess world, net.minecraft.util.math.BlockPos pos) {
+        return EnumPlantType.Crop;
     }
 }

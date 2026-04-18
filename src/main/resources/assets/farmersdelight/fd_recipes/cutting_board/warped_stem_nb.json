@@ -1,0 +1,21 @@
+{
+  "conditions": {
+    "mod_loaded": "nb"
+  },
+  "ingredients": [
+    {
+      "item": "nb:warped_stem"
+    }
+  ],
+  "tool": "ore:toolAxe",
+  "result": [
+    {
+      "item": "nb:warped_planks",
+      "count": 4
+    },
+    {
+      "item": "farmersdelight:tree_bark",
+      "count": 1
+    }
+  ]
+}

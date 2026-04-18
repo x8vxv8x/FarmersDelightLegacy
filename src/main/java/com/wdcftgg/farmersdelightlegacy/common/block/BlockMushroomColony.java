@@ -28,6 +28,7 @@ import java.util.Random;
 
 public class BlockMushroomColony extends BlockBush implements IGrowable {
     private static final int PLACING_LIGHT_LEVEL = 13;
+    private static final int MAX_AGE = 3;
     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
     private static final AxisAlignedBB[] SHAPES = new AxisAlignedBB[]{
             new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 0.5D, 0.75D),
@@ -83,23 +84,21 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         int age = state.getValue(AGE);
-        if (age <= 0) {
-            return false;
-        }
-
         ItemStack held = playerIn.getHeldItem(hand);
-        if (held.getItem() != Items.SHEARS) {
+        if (age <= 0 || held.getItem() != Items.SHEARS) {
             return false;
         }
 
         Item mushroomItem = ForgeRegistries.ITEMS.getValue(mushroomItemId);
-        if (mushroomItem != null && !worldIn.isRemote) {
-            spawnAsEntity(worldIn, pos, new ItemStack(mushroomItem));
+        if (!worldIn.isRemote) {
+            if (mushroomItem != null) {
+                spawnAsEntity(worldIn, pos, new ItemStack(mushroomItem));
+            }
+            worldIn.setBlockState(pos, state.withProperty(AGE, age - 1), 2);
+            held.damageItem(1, playerIn);
         }
 
         worldIn.playSound(playerIn, pos, SoundEvents.ENTITY_MOOSHROOM_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
-        worldIn.setBlockState(pos, state.withProperty(AGE, age - 1), 2);
-        held.damageItem(1, playerIn);
         return true;
     }
 
@@ -108,14 +107,14 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
         super.updateTick(worldIn, pos, state, rand);
         int age = state.getValue(AGE);
         IBlockState groundState = worldIn.getBlockState(pos.down());
-        if (age < 3 && groundState.getBlock() == ModBlocks.RICH_SOIL && rand.nextInt(4) == 0 && canBlockStay(worldIn, pos, state)) {
+        if (age < getMaxAge() && groundState.getBlock() == ModBlocks.RICH_SOIL && rand.nextInt(4) == 0 && canBlockStay(worldIn, pos, state)) {
             worldIn.setBlockState(pos, state.withProperty(AGE, age + 1), 2);
         }
     }
 
     @Override
     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient) {
-        return state.getValue(AGE) < 3;
+        return state.getValue(AGE) < getMaxAge();
     }
 
     @Override
@@ -125,8 +124,12 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
 
     @Override
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
-        int age = Math.min(3, state.getValue(AGE) + 1 + rand.nextInt(2));
+        int age = Math.min(getMaxAge(), state.getValue(AGE) + 1 + rand.nextInt(2));
         worldIn.setBlockState(pos, state.withProperty(AGE, age), 2);
+    }
+
+    public int getMaxAge() {
+        return MAX_AGE;
     }
 
     @Override
@@ -141,7 +144,7 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(AGE, Math.max(0, Math.min(3, meta)));
+        return this.getDefaultState().withProperty(AGE, Math.max(0, Math.min(getMaxAge(), meta)));
     }
 
     @Override
@@ -166,13 +169,13 @@ public class BlockMushroomColony extends BlockBush implements IGrowable {
     }
 
     private void addConfiguredDrops(NonNullList<ItemStack> drops, int age, boolean usingShears) {
-        Item mushroomItem = ForgeRegistries.ITEMS.getValue(mushroomItemId);
-        if (mushroomItem == null) {
+        if (usingShears && age == getMaxAge()) {
+            drops.add(new ItemStack(this));
             return;
         }
 
-        if (usingShears && age == 3) {
-            drops.add(new ItemStack(this));
+        Item mushroomItem = ForgeRegistries.ITEMS.getValue(mushroomItemId);
+        if (mushroomItem == null) {
             return;
         }
 

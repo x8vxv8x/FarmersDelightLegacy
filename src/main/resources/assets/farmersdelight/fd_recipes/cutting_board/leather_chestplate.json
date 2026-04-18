@@ -2,9 +2,7 @@
   "ingredients": [
     "minecraft:leather_chestplate"
   ],
-  "tool": {
-    "tag": "forge:shears"
-  },
+  "tool": "ore:toolShears",
   "result": [
     {
       "item": "minecraft:leather",

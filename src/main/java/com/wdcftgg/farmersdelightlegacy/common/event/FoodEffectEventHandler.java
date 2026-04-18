@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -53,14 +54,17 @@ public final class FoodEffectEventHandler {
 
         String effectName = new TextComponentTranslation(effect.getEffectName()).getFormattedText();
         String duration = Potion.getPotionDurationString(effect, 1.0F);
-        event.getToolTip().add(TextFormatting.BLUE
-                + new TextComponentTranslation("farmersdelight.tooltip.food.effect", effectName, duration).getFormattedText());
+        TextComponentTranslation effectTooltip = new TextComponentTranslation("farmersdelight.tooltip.food.effect",
+                effectName, duration);
+
+        effectTooltip.getStyle().setColor(TextFormatting.BLUE);
+        event.getToolTip().add(effectTooltip.getFormattedText());
     }
 
     private static Map<Item, PotionEffect> getVanillaSoupEffects() {
         Potion comfort = ForgeRegistries.POTIONS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "comfort"));
         if (comfort == null) {
-            return java.util.Collections.emptyMap();
+            return Collections.emptyMap();
         }
 
         Map<Item, PotionEffect> effects = new LinkedHashMap<>();

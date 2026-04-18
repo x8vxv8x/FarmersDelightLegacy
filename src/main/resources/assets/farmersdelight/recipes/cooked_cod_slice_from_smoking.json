@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:smelting",
+  "type": "farmersdelight:smelting",
   "ingredient": {
     "item": "farmersdelight:cod_slice"
   },

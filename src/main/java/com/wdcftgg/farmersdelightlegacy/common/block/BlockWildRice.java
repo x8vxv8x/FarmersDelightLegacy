@@ -78,6 +78,9 @@ public class BlockWildRice extends BlockBush implements IGrowable {
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!this.canBlockStay(worldIn, pos, state)) {
+            if (!worldIn.isRemote) {
+                this.spawnUpstreamDrop(worldIn, pos, state, ItemStack.EMPTY);
+            }
             worldIn.setBlockToAir(pos);
             if (state.getValue(HALF) == BlockDoublePlant.EnumBlockHalf.LOWER && worldIn.getBlockState(pos.up()).getBlock() == this) {
                 worldIn.setBlockToAir(pos.up());
@@ -112,16 +115,7 @@ public class BlockWildRice extends BlockBush implements IGrowable {
             return;
         }
 
-        boolean usingShears = stack.getItem() == Items.SHEARS;
-        Item dropItem;
-        if (usingShears) {
-            dropItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "wild_rice"));
-        } else {
-            dropItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(FarmersDelightLegacy.MOD_ID, "rice"));
-        }
-        if (dropItem != null) {
-            spawnAsEntity(worldIn, pos, new ItemStack(dropItem));
-        }
+        this.spawnUpstreamDrop(worldIn, pos, state, stack);
     }
 
     @Override
@@ -201,6 +195,19 @@ public class BlockWildRice extends BlockBush implements IGrowable {
         BlockPos counterpartPos = half == BlockDoublePlant.EnumBlockHalf.LOWER ? pos.up() : pos.down();
         IBlockState counterpartState = world.getBlockState(counterpartPos);
         return counterpartState.getBlock() == this && counterpartState.getValue(HALF) != half;
+    }
+
+    private void spawnUpstreamDrop(World worldIn, BlockPos pos, IBlockState state, ItemStack toolStack) {
+        if (!hasCounterpart(worldIn, pos, state)) {
+            return;
+        }
+
+        boolean usingShears = !toolStack.isEmpty() && toolStack.getItem() == Items.SHEARS;
+        ResourceLocation dropId = new ResourceLocation(FarmersDelightLegacy.MOD_ID, usingShears ? "wild_rice" : "rice");
+        Item dropItem = ForgeRegistries.ITEMS.getValue(dropId);
+        if (dropItem != null) {
+            spawnAsEntity(worldIn, pos, new ItemStack(dropItem));
+        }
     }
 }
 

@@ -5,6 +5,8 @@ import com.wdcftgg.farmersdelightlegacy.common.ModCreativeTab;
 import com.wdcftgg.farmersdelightlegacy.common.block.*;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemCanvasHangingSign;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemCanvasSign;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemCookingPot;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemMushroomColony;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemSkillet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -15,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -27,15 +30,18 @@ public final class ModBlocks {
 
     public static final Map<String, Block> BLOCKS = new LinkedHashMap<>();
     public static final List<Item> BLOCK_ITEMS = new ArrayList<>();
+    private static final List<String> SINGLE_STACK_BLOCK_ITEMS = java.util.Arrays.asList(
+            "roast_chicken_block", "stuffed_pumpkin_block", "honey_glazed_ham_block", "shepherds_pie_block", "rice_roll_medley_block"
+    );
 
     public static final Block TOMATOES = registerBlockOnly("tomatoes", new BlockTomatoVine());
-    public static final Block RICE = registerBlockOnly("rice", new BlockRice());
+    public static final Block RICE = registerBlockOnly("rice", createRiceBlock());
     public static final Block CABBAGES = registerBlockOnly("cabbages", new BlockCabbage());
     public static final Block ONIONS = registerBlockOnly("onions", new BlockOnion());
     public static final Block BUDDING_TOMATOES = registerBlockOnly("budding_tomatoes", new BlockBuddingTomato());
     public static final Block RICE_PANICLES = registerBlockOnly("rice_panicles", new BlockRicePanicles());
 
-    public static final Block COOKING_POT = register("cooking_pot", new BlockCookingPot());
+    public static final Block COOKING_POT = register("cooking_pot", new BlockCookingPot(), ItemCookingPot::new);
     public static final Block CUTTING_BOARD = register("cutting_board", new BlockCuttingBoard());
     public static final Block BASKET = register("basket", new BlockBasket());
     public static final Block CARROT_CRATE = register("carrot_crate", basicBlock(Material.WOOD, SoundType.WOOD, 2.0F));
@@ -86,8 +92,8 @@ public final class ModBlocks {
     public static final Block WILD_BEETROOTS = register("wild_beetroots",
             new BlockWildCrop("minecraft:beetroot_seeds", 2, "minecraft:beetroot", 0.2F, null, 0, 0));
     public static final Block WILD_RICE = register("wild_rice", new BlockWildRice());
-    public static final Block BROWN_MUSHROOM_COLONY = register("brown_mushroom_colony", new BlockMushroomColony("minecraft:brown_mushroom"));
-    public static final Block RED_MUSHROOM_COLONY = register("red_mushroom_colony", new BlockMushroomColony("minecraft:red_mushroom"));
+    public static final Block BROWN_MUSHROOM_COLONY = register("brown_mushroom_colony", new BlockMushroomColony("minecraft:brown_mushroom"), ItemMushroomColony::new);
+    public static final Block RED_MUSHROOM_COLONY = register("red_mushroom_colony", new BlockMushroomColony("minecraft:red_mushroom"), ItemMushroomColony::new);
     public static final Block ROPE = register("rope", new BlockRope());
     public static final Block CANVAS_RUG = register("canvas_rug", new BlockCanvasRug());
     public static final Block TATAMI = register("tatami", new BlockTatami());
@@ -127,6 +133,9 @@ public final class ModBlocks {
         itemBlock.setRegistryName(block.getRegistryName());
         itemBlock.setTranslationKey(block.getTranslationKey());
         itemBlock.setCreativeTab(ModCreativeTab.TAB);
+        if (SINGLE_STACK_BLOCK_ITEMS.contains(path)) {
+            itemBlock.setMaxStackSize(1);
+        }
         BLOCK_ITEMS.add(itemBlock);
         return block;
     }
@@ -140,6 +149,24 @@ public final class ModBlocks {
 
     private static Block basicBlock(Material material, SoundType soundType, float hardness) {
         return new BasicBlock(material, soundType, hardness);
+    }
+
+    private static Block createRiceBlock() {
+        if (!Loader.isModLoaded("fluidlogged_api")) {
+            return new BlockRice();
+        }
+
+        Block compatBlock = instantiateCompatBlock("com.wdcftgg.farmersdelightlegacy.common.compat.fluidlogged.BlockFluidloggedRice");
+        return compatBlock != null ? compatBlock : new BlockRice();
+    }
+
+    private static Block instantiateCompatBlock(String className) {
+        try {
+            return (Block) Class.forName(className).getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            FarmersDelightLegacy.LOGGER.warn("加载可选兼容方块失败：{}，已回退到默认实现。", className, exception);
+            return null;
+        }
     }
 
     private static void registerCanvasSignFamily() {

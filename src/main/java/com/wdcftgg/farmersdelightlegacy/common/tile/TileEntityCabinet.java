@@ -1,6 +1,8 @@
 package com.wdcftgg.farmersdelightlegacy.common.tile;
 
 import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
+import com.wdcftgg.farmersdelightlegacy.common.block.BlockCabinet;
+import com.wdcftgg.farmersdelightlegacy.common.registry.ModSounds;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -10,10 +12,15 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 
 public class TileEntityCabinet extends TileEntity implements IInventory {
 
@@ -89,7 +96,7 @@ public class TileEntityCabinet extends TileEntity implements IInventory {
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        if (this.world == null || this.world.getTileEntity(this.pos) != this) {
+        if (this.world == null || !(this.world.getTileEntity(this.pos) instanceof TileEntityCabinet)) {
             return false;
         }
         return player.getDistanceSq((double) this.pos.getX() + 0.5D,
@@ -98,12 +105,42 @@ public class TileEntityCabinet extends TileEntity implements IInventory {
     }
 
     @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
+    }
+
+    @Override
     public void openInventory(EntityPlayer player) {
+        if (player.isSpectator() || this.world == null || this.world.isRemote) {
+            return;
+        }
+
+        if (this.openerCount < 0) {
+            this.openerCount = 0;
+        }
+
+        this.openerCount++;
+        if (this.openerCount == 1) {
+            updateOpenState(true);
+            playCabinetSound(world.rand.nextBoolean() ? ModSounds.CABINET_OPEN1 : ModSounds.CABINET_OPEN2);
+        }
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
+        if (player.isSpectator() || this.world == null || this.world.isRemote) {
+            return;
+        }
 
+        if (this.openerCount > 0) {
+            this.openerCount--;
+        }
+
+        if (this.openerCount <= 0) {
+            this.openerCount = 0;
+            updateOpenState(false);
+            playCabinetSound(ModSounds.CABINET_CLOSE);
+        }
     }
 
     @Override
@@ -216,6 +253,31 @@ public class TileEntityCabinet extends TileEntity implements IInventory {
             this.world.updateComparatorOutputLevel(this.pos, this.getBlockType());
             this.world.notifyBlockUpdate(this.pos, state, state, 3);
         }
+    }
+
+    private void updateOpenState(boolean open) {
+        if (this.world == null) {
+            return;
+        }
+
+        IBlockState state = this.world.getBlockState(this.pos);
+        if (state.getBlock() instanceof BlockCabinet && state.getValue(BlockCabinet.OPEN) != open) {
+            this.world.setBlockState(this.pos, state.withProperty(BlockCabinet.OPEN, open), 3);
+        }
+    }
+
+    private void playCabinetSound(net.minecraft.util.SoundEvent soundEvent) {
+        if (this.world == null || soundEvent == null) {
+            return;
+        }
+
+        IBlockState state = this.world.getBlockState(this.pos);
+        EnumFacing facing = state.getBlock() instanceof BlockCabinet ? state.getValue(BlockCabinet.FACING) : EnumFacing.NORTH;
+        Vec3i facingVector = facing.getDirectionVec();
+        double x = this.pos.getX() + 0.5D + facingVector.getX() / 2.0D;
+        double y = this.pos.getY() + 0.5D + facingVector.getY() / 2.0D;
+        double z = this.pos.getZ() + 0.5D + facingVector.getZ() / 2.0D;
+        this.world.playSound(null, x, y, z, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
     }
 }
 

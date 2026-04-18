@@ -1,0 +1,21 @@
+{
+  "conditions": {
+    "mod_loaded": "nb"
+  },
+  "ingredients": [
+    {
+      "item": "nb:crimson_stem"
+    }
+  ],
+  "tool": "ore:toolAxe",
+  "result": [
+    {
+      "item": "nb:crimson_planks",
+      "count": 4
+    },
+    {
+      "item": "farmersdelight:tree_bark",
+      "count": 1
+    }
+  ]
+}

@@ -4,10 +4,10 @@
   "group": "fd_cabinet",
   "key": {
     "D": {
-      "item": "minecraft:warped_trapdoor"
+      "item": "nb:warped_trapdoor"
     },
     "_": {
-      "item": "minecraft:warped_slab"
+      "item": "nb:warped_planks"
     }
   },
   "pattern": [

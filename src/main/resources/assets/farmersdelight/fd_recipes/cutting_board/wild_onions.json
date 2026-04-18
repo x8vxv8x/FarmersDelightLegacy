@@ -12,12 +12,14 @@
     },
     {
       "item": "minecraft:dye",
-      "count": 2
+      "count": 2,
+      "data": 13
     },
     {
       "item": "minecraft:dye",
       "count": 1,
-      "chance": 0.1
+      "chance": 0.1,
+      "data": 10
     }
   ]
 }

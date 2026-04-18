@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -157,9 +158,7 @@ public class BlockBasket extends BlockDirectional implements ITileEntityProvider
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         super.onBlockAdded(worldIn, pos, state);
         boolean enabled = !worldIn.isBlockPowered(pos);
-        if (enabled != state.getValue(ENABLED)) {
-            worldIn.setBlockState(pos, state.withProperty(ENABLED, enabled), 2);
-        }
+        updateEnabledState(worldIn, pos, state, enabled);
     }
 
     @Override
@@ -220,8 +219,30 @@ public class BlockBasket extends BlockDirectional implements ITileEntityProvider
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         boolean enabled = !worldIn.isBlockPowered(pos);
-        if (enabled != state.getValue(ENABLED)) {
-            worldIn.setBlockState(pos, state.withProperty(ENABLED, enabled), 4);
+        updateEnabledState(worldIn, pos, state, enabled);
+    }
+
+    private void updateEnabledState(World worldIn, BlockPos pos, IBlockState state, boolean enabled) {
+        if (enabled == state.getValue(ENABLED)) {
+            return;
+        }
+
+        TileEntity previousTileEntity = worldIn.getTileEntity(pos);
+        NBTTagCompound previousData = null;
+        if (previousTileEntity != null) {
+            previousData = previousTileEntity.writeToNBT(new NBTTagCompound());
+        }
+
+        worldIn.setBlockState(pos, state.withProperty(ENABLED, enabled), 2);
+
+        if (previousData == null) {
+            return;
+        }
+
+        TileEntity currentTileEntity = worldIn.getTileEntity(pos);
+        if (currentTileEntity != null && currentTileEntity != previousTileEntity) {
+            currentTileEntity.readFromNBT(previousData);
+            currentTileEntity.markDirty();
         }
     }
 

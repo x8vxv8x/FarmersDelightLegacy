@@ -1,0 +1,22 @@
+{
+  "conditions": {
+    "mod_loaded": "futuremc"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:log2",
+      "data": 1
+    }
+  ],
+  "tool": "ore:toolAxe",
+  "result": [
+    {
+      "item": "futuremc:stripped_dark_oak_log",
+      "count": 1
+    },
+    {
+      "item": "farmersdelight:tree_bark",
+      "count": 1
+    }
+  ]
+}

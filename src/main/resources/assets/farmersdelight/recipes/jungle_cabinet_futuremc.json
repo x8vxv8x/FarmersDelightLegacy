@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "futuremc"
+    }
+  ],
+  "group": "fd_cabinet",
+  "key": {
+    "D": {
+      "item": "futuremc:jungle_trapdoor"
+    },
+    "_": {
+      "item": "minecraft:wooden_slab",
+      "data": 3
+    }
+  },
+  "pattern": [
+    "___",
+    "D D",
+    "___"
+  ],
+  "result": {
+    "item": "farmersdelight:jungle_cabinet"
+  },
+  "show_notification": true
+}

@@ -1,11 +1,13 @@
 package com.wdcftgg.farmersdelightlegacy.common.util;
 
 import com.wdcftgg.farmersdelightlegacy.api.heat.HeatSourceApi;
+import com.wdcftgg.farmersdelightlegacy.api.heat.HeatSourceOffsetApi;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockStove;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -40,6 +42,46 @@ public final class HeatSourceHelper {
 
         Material material = state.getMaterial();
         return material == Material.FIRE || material == Material.LAVA;
+    }
+
+    public static boolean isCookwareHeated(World world, BlockPos cookwarePos) {
+        BlockPos heatPos = resolveCookwareHeatSourcePos(world, cookwarePos);
+        return isDirectHeatSource(world, heatPos);
+    }
+
+    public static boolean hasVisualSupportForCookware(World world, BlockPos cookwarePos) {
+        BlockPos supportPos = resolveCookwareHeatSourcePos(world, cookwarePos);
+        return isVisualSupportHeatSource(world, supportPos);
+    }
+
+    public static BlockPos resolveCookwareHeatSourcePos(World world, BlockPos cookwarePos) {
+        if (world == null || cookwarePos == null) {
+            return cookwarePos;
+        }
+
+        BlockPos firstBelowPos = cookwarePos.down();
+        if (!world.isBlockLoaded(firstBelowPos)) {
+            return firstBelowPos;
+        }
+
+        IBlockState firstBelowState = world.getBlockState(firstBelowPos);
+        if (shouldOffsetCookwareHeatCheck(world, firstBelowPos, firstBelowState)) {
+            return firstBelowPos.down();
+        }
+
+        return firstBelowPos;
+    }
+
+    public static boolean shouldOffsetCookwareHeatCheck(World world, BlockPos pos, IBlockState state) {
+        if (world == null || pos == null || state == null) {
+            return false;
+        }
+
+        if (state.getBlock() == Blocks.HOPPER || world.getTileEntity(pos) instanceof TileEntityHopper) {
+            return true;
+        }
+
+        return HeatSourceOffsetApi.shouldOffsetDown(world, pos, state);
     }
 
     private static boolean isBuiltInDirectHeatSource(IBlockState state) {

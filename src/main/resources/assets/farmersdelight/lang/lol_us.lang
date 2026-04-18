@@ -41,8 +41,8 @@ death.attack.farmersdelight.stove=%1$s got toasted!
 death.attack.farmersdelight.stove.player=%1$s wuz cooked by Chef %2$s!
 effect.farmersdelight.comfort=Happy Tummy
 effect.farmersdelight.nourishment=No Hungry
-enchantment.farmersdelight.backstabbing=Sniky Stab
-enchantment.farmersdelight.backstabbing.desc=Moar hurt if u stab from behind!
+enchantment.backstabbing=Sniky Stab
+enchantment.backstabbing.desc=Moar hurt if u stab from behind!
 entity.farmersdelight.rotten_tomato=Taestz Laik Brokali
 item.farmersdelight.apple_cider.name=Mapple Juice+
 item.farmersdelight.apple_pie_slice.name=Slice of Mapple Liez
@@ -128,3 +128,4 @@ itemGroup.farmersdelight=Yum Yum Mod
 item.farmersdelight.pumpkin_pie_slice.name=Slais ov Pumpkin Pai
 
 farmersdelight.jei.campfire=Campfire Cooking
+

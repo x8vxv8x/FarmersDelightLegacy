@@ -1,6 +1,6 @@
 {
   "ingredients": [
-    "ore:listAllberry",
+    "ore:cropSweetBerry",
     "ore:listAllmilk",
     "ore:listAllEgg",
     "minecraft:sugar"

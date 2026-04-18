@@ -1,0 +1,26 @@
+{
+  "parent": "farmersdelight:main/use_skillet",
+  "display": {
+    "icon": {
+      "item": "farmersdelight:skillet"
+    },
+    "title": {
+      "translate": "farmersdelight.advancement.place_skillet"
+    },
+    "description": {
+      "translate": "farmersdelight.advancement.place_skillet.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "skillet": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "block": "farmersdelight:skillet"
+      }
+    }
+  }
+}

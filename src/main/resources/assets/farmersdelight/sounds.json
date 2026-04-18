@@ -55,22 +55,19 @@
       }
     ]
   },
-  "block.cabinet.open": {
-    "subtitle": "farmersdelight.subtitles.cabinet.open",
+  "block.cabinet.open1": {
     "sounds": [
-      {
-        "name": "block.barrel.open",
-        "type": "event"
-      }
+      "farmersdelight:block/cabinet/cabinet_open1"
+    ]
+  },
+  "block.cabinet.open2": {
+    "sounds": [
+      "farmersdelight:block/cabinet/cabinet_open2"
     ]
   },
   "block.cabinet.close": {
-    "subtitle": "farmersdelight.subtitles.cabinet.close",
     "sounds": [
-      {
-        "name": "block.barrel.close",
-        "type": "event"
-      }
+      "farmersdelight:block/cabinet/cabinet_close"
     ]
   },
   "block.tomato_bush.pick_tomatoes": {

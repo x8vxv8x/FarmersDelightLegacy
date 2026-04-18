@@ -193,6 +193,15 @@ public class BlockFeast extends Block implements ITileEntityProvider {
         return new ItemStack(servingItem);
     }
 
+    public ItemStack getCookingPotServingStack() {
+        ItemStack servingStack = getServingStackForServings(this.maxServings);
+        if (servingStack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        servingStack.setCount(1);
+        return servingStack;
+    }
+
     @Nullable
     protected ItemStack getRequiredServingItem(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                                EnumHand hand, ItemStack servingResult, int servings) {

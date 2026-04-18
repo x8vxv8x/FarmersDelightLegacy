@@ -1,28 +1,16 @@
 package com.wdcftgg.farmersdelightlegacy.common.recipe;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class CampfireCookingRecipeManager {
-
-    private static final Gson GSON = new Gson();
-    private static final String RECIPES_BASE = "assets/farmersdelight/fd_recipes/campfire/";
-    private static final String RECIPES_INDEX = RECIPES_BASE + "_index.json";
 
     private static final List<CampfireCookingRecipe> RECIPES = new ArrayList<>();
     private static boolean loaded;
@@ -55,30 +43,17 @@ public final class CampfireCookingRecipeManager {
     }
 
     private static void loadJsonRecipes() {
-        JsonArray indexArray = readJsonArray(RECIPES_INDEX);
-        if (indexArray == null) {
-            return;
-        }
-
-        for (JsonElement indexElement : indexArray) {
-            if (!indexElement.isJsonPrimitive()) {
-                continue;
-            }
-
-            String recipePath = indexElement.getAsString();
-            JsonObject recipeJson = readJsonObject(RECIPES_BASE + recipePath);
-            if (recipeJson == null) {
-                continue;
-            }
-
+        for (RecipeResourceScanner.RecipeJsonResource recipeResource : RecipeResourceScanner.scan("campfire")) {
+            JsonObject recipeJson = recipeResource.getJsonObject();
+            String sourceModId = recipeResource.getModId();
             JsonElement ingredientElement = recipeJson.get("ingredient");
             int cookingTime = recipeJson.has("cookingtime") ? recipeJson.get("cookingtime").getAsInt() : 600;
-            ItemStack result = parseResult(recipeJson.get("result"));
+            ItemStack result = parseResult(recipeJson.get("result"), sourceModId);
             if (ingredientElement == null || result.isEmpty()) {
                 continue;
             }
 
-            List<CampfireCookingRecipe.IngredientEntry> ingredients = parseIngredients(ingredientElement);
+            List<CampfireCookingRecipe.IngredientEntry> ingredients = parseIngredients(ingredientElement, sourceModId);
             if (ingredients.isEmpty() || result.isEmpty()) {
                 continue;
             }
@@ -86,10 +61,10 @@ public final class CampfireCookingRecipeManager {
         }
     }
 
-    private static List<CampfireCookingRecipe.IngredientEntry> parseIngredients(JsonElement ingredientElement) {
+    private static List<CampfireCookingRecipe.IngredientEntry> parseIngredients(JsonElement ingredientElement, String defaultNamespace) {
         List<CampfireCookingRecipe.IngredientEntry> result = new ArrayList<>();
         if (ingredientElement.isJsonObject()) {
-            addIngredientEntry(result, ingredientElement.getAsJsonObject());
+            addIngredientEntry(result, ingredientElement.getAsJsonObject(), defaultNamespace);
             return result;
         }
         if (!ingredientElement.isJsonArray()) {
@@ -97,15 +72,15 @@ public final class CampfireCookingRecipeManager {
         }
         for (JsonElement candidate : ingredientElement.getAsJsonArray()) {
             if (candidate.isJsonObject()) {
-                addIngredientEntry(result, candidate.getAsJsonObject());
+                addIngredientEntry(result, candidate.getAsJsonObject(), defaultNamespace);
             }
         }
         return result;
     }
 
-    private static void addIngredientEntry(List<CampfireCookingRecipe.IngredientEntry> target, JsonObject ingredientObject) {
+    private static void addIngredientEntry(List<CampfireCookingRecipe.IngredientEntry> target, JsonObject ingredientObject, String defaultNamespace) {
         if (ingredientObject.has("item")) {
-            addItemIngredient(target, ingredientObject.get("item"));
+            addItemIngredient(target, ingredientObject.get("item"), defaultNamespace);
             return;
         }
 
@@ -117,12 +92,12 @@ public final class CampfireCookingRecipeManager {
         }
     }
 
-    private static void addItemIngredient(List<CampfireCookingRecipe.IngredientEntry> target, JsonElement itemElement) {
+    private static void addItemIngredient(List<CampfireCookingRecipe.IngredientEntry> target, JsonElement itemElement, String defaultNamespace) {
         if (itemElement == null || itemElement.isJsonNull()) {
             return;
         }
         if (itemElement.isJsonPrimitive()) {
-            Item item = itemOf(itemElement.getAsString());
+            Item item = itemOf(itemElement.getAsString(), defaultNamespace);
             if (item != null) {
                 target.add(CampfireCookingRecipe.IngredientEntry.forItem(item));
             }
@@ -131,17 +106,17 @@ public final class CampfireCookingRecipeManager {
         if (itemElement.isJsonObject()) {
             JsonObject nestedItemObject = itemElement.getAsJsonObject();
             if (nestedItemObject.has("item")) {
-                addItemIngredient(target, nestedItemObject.get("item"));
+                addItemIngredient(target, nestedItemObject.get("item"), defaultNamespace);
             }
         }
     }
 
-    private static ItemStack parseResult(JsonElement resultElement) {
+    private static ItemStack parseResult(JsonElement resultElement, String defaultNamespace) {
         if (resultElement == null || resultElement.isJsonNull()) {
             return ItemStack.EMPTY;
         }
         if (resultElement.isJsonPrimitive()) {
-            return stackOf(resultElement.getAsString(), 1);
+            return stackOf(resultElement.getAsString(), 1, defaultNamespace);
         }
         if (!resultElement.isJsonObject()) {
             return ItemStack.EMPTY;
@@ -154,7 +129,7 @@ public final class CampfireCookingRecipeManager {
 
         String resultId = resultObject.get("item").getAsString();
         int resultCount = resultObject.has("count") ? Math.max(1, resultObject.get("count").getAsInt()) : 1;
-        return stackOf(resultId, resultCount);
+        return stackOf(resultId, resultCount, defaultNamespace);
     }
 
     private static String convertTagToOreDict(String tagPath) {
@@ -179,45 +154,19 @@ public final class CampfireCookingRecipeManager {
         }
     }
 
-    private static Item itemOf(String path) {
+    private static Item itemOf(String path, String defaultNamespace) {
         if (path == null || path.isEmpty()) {
             return null;
         }
-        ResourceLocation itemId = path.contains(":") ? new ResourceLocation(path) : new ResourceLocation(FarmersDelightLegacy.MOD_ID, path);
+        ResourceLocation itemId = path.contains(":") ? new ResourceLocation(path) : new ResourceLocation(defaultNamespace, path);
         return ForgeRegistries.ITEMS.getValue(itemId);
     }
 
-    private static ItemStack stackOf(String path, int count) {
-        Item item = itemOf(path);
+    private static ItemStack stackOf(String path, int count, String defaultNamespace) {
+        Item item = itemOf(path, defaultNamespace);
         if (item == null) {
             return ItemStack.EMPTY;
         }
         return new ItemStack(item, count);
-    }
-
-    private static JsonArray readJsonArray(String classpathPath) {
-        try (InputStream inputStream = CampfireCookingRecipeManager.class.getClassLoader().getResourceAsStream(classpathPath)) {
-            if (inputStream == null) {
-                return null;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return GSON.fromJson(reader, JsonArray.class);
-            }
-        } catch (IOException ignored) {
-            return null;
-        }
-    }
-
-    private static JsonObject readJsonObject(String classpathPath) {
-        try (InputStream inputStream = CampfireCookingRecipeManager.class.getClassLoader().getResourceAsStream(classpathPath)) {
-            if (inputStream == null) {
-                return null;
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return GSON.fromJson(reader, JsonObject.class);
-            }
-        } catch (IOException ignored) {
-            return null;
-        }
     }
 }

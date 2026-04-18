@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
+import thedarkcolour.futuremc.registry.FItems;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -41,7 +42,7 @@ public final class ModOreDictionary {
         registerOre("cropOnion", "onion");
         registerOre("cropRice", "rice");
         registerOre("cropRice", "rice_panicle");
-        registerOre("cropSweetBerry", "sweet_berry_cookie");
+//        registerOre("cropSweetBerry", "sweet_berry_cookie");
 
         registerOre("foodDough", "wheat_dough");
         registerOre("foodPasta", "raw_pasta");
@@ -71,7 +72,8 @@ public final class ModOreDictionary {
         registerOre("listAllveggie", "tomato");
         registerOre("listAllveggie", "onion");
 
-        registerOre("listAllberry", "sweet_berry_cookie");
+//        registerOre("listAllberry", "<ore:seedSweetBerry>");
+//        registerOre("listAllberry", "sweet_berry_cookie");
         registerOre("listAllmilk", "milk_bottle");
 
         for (Map.Entry<String, Item> entry : ModItems.ITEMS.entrySet()) {
@@ -127,6 +129,10 @@ public final class ModOreDictionary {
         registerOreStack("toolShovel", new ItemStack(Items.DIAMOND_SHOVEL));
 
         registerOreStack("toolShears", new ItemStack(Items.SHEARS));
+
+        if (!Loader.isModLoaded("futuremc")) registerOreStack("cropSweetBerry", Items.APPLE.getDefaultInstance());
+
+
 
         // 1.12 中骨粉/可可豆/墨囊均归属染料物品，通过矿辞区分元数据。
         registerOreStack("dyeWhite", new ItemStack(Items.DYE, 1, 15));
@@ -188,14 +194,6 @@ public final class ModOreDictionary {
             OreDictionary.registerOre("mayBeKelp", Item.getByNameOrId("oe:dried_kelp"));
         else
             OreDictionary.registerOre("mayBeKelp", new ItemStack(Items.REEDS));
-
-        if (Loader.isModLoaded("oe"))
-            OreDictionary.registerOre("mayBeKelp", Item.getByNameOrId("oe:dried_kelp"));
-        else
-            OreDictionary.registerOre("mayBeKelp", new ItemStack(Items.REEDS));
-
-
-
 
 
         OreDictionary.registerOre("listAllmushroom", new ItemStack(Item.getItemFromBlock(Blocks.BROWN_MUSHROOM)));

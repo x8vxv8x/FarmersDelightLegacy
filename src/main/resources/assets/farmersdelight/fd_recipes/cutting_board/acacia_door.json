@@ -6,7 +6,8 @@
   "result": [
     {
       "item": "minecraft:planks",
-      "count": 1
+      "count": 1,
+      "data": 4
     }
   ]
 }

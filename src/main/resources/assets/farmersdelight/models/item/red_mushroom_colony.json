@@ -1,3 +1,6 @@
 {
-  "parent": "farmersdelight:block/red_mushroom_colony_stage3"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "farmersdelight:block/red_mushroom_colony_stage3"
+  }
 }

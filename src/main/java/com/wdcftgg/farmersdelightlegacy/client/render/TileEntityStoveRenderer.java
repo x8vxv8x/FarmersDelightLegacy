@@ -4,6 +4,8 @@ import com.wdcftgg.farmersdelightlegacy.common.block.BlockStove;
 import com.wdcftgg.farmersdelightlegacy.common.tile.TileEntityStove;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
@@ -40,7 +42,14 @@ public class TileEntityStoveRenderer extends TileEntitySpecialRenderer<TileEntit
             float[] baseOffset = SLOT_OFFSETS[i];
             GlStateManager.translate(baseOffset[0], baseOffset[1], 0.0D);
             GlStateManager.scale(0.375F, 0.375F, 0.375F);
+            int packedLight = te.getWorld() == null ? 15728880 : te.getWorld().getCombinedLight(te.getPos().up(), 0);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, packedLight & 65535, packedLight >> 16);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.enableRescaleNormal();
+            RenderHelper.enableStandardItemLighting();
             Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.FIXED);
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.disableRescaleNormal();
             GlStateManager.popMatrix();
         }
     }

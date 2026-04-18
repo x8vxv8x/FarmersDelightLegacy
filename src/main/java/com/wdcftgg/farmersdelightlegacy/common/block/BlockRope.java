@@ -8,6 +8,8 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -17,8 +19,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockRope extends BlockPane {
 
@@ -49,6 +55,11 @@ public class BlockRope extends BlockPane {
     }
 
     @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return NULL_AABB;
     }
@@ -59,9 +70,39 @@ public class BlockRope extends BlockPane {
     }
 
     @Override
+    public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity) {
+        return true;
+    }
+
+    @Override
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
+                                      List<AxisAlignedBB> collidingBoxes, @Nullable net.minecraft.entity.Entity entityIn,
+                                      boolean isActualState) {
+        // 绳子本身不提供实体碰撞盒，允许玩家与实体直接穿过。
+    }
+
+    @Override
+    public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
+        if (!(entityIn instanceof EntityLivingBase)) {
+            return;
+        }
+
+        EntityLivingBase living = (EntityLivingBase) entityIn;
+        if (living instanceof EntityPlayer && ((EntityPlayer) living).isSpectator()) {
+            return;
+        }
+
+        applyClimbingMotion(living);
+    }
+
+    @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand,
                                     EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack heldStack = playerIn.getHeldItem(hand);
+        if (isHoldingRope(heldStack)) {
+            return worldIn.isRemote || tryPlaceRope(worldIn, pos, playerIn, heldStack, facing);
+        }
+
         if (!heldStack.isEmpty()) {
             return false;
         }
@@ -71,6 +112,62 @@ public class BlockRope extends BlockPane {
         }
 
         return ringBellAbove(worldIn, pos);
+    }
+
+    public static void applyClimbingMotion(EntityLivingBase living) {
+        living.motionX = MathHelper.clamp(living.motionX, -0.15000000596046448D, 0.15000000596046448D);
+        living.motionZ = MathHelper.clamp(living.motionZ, -0.15000000596046448D, 0.15000000596046448D);
+        living.fallDistance = 0.0F;
+        if (living.isSneaking()) {
+            if (living.motionY < 0.0D) {
+                living.motionY = 0.0D;
+            }
+            return;
+        }
+
+        if (living.isJumping) {
+            living.motionY = Math.max(living.motionY, 0.20000000298023224D);
+            return;
+        }
+
+        living.motionY = Math.max(living.motionY, -0.15D);
+    }
+
+    private boolean tryPlaceRope(World worldIn, BlockPos pos, EntityPlayer playerIn, ItemStack heldStack, EnumFacing facing) {
+        BlockPos targetPos = playerIn.isSneaking() ? pos.offset(facing) : findLowestRope(pos, worldIn).down();
+        if (!playerIn.canPlayerEdit(targetPos, facing, heldStack)) {
+            return false;
+        }
+
+        IBlockState targetState = worldIn.getBlockState(targetPos);
+        if (!targetState.getBlock().isReplaceable(worldIn, targetPos)) {
+            return false;
+        }
+
+        if (!worldIn.mayPlace(this, targetPos, false, facing, playerIn) || !this.canPlaceBlockAt(worldIn, targetPos)) {
+            return false;
+        }
+
+        if (!worldIn.isRemote) {
+            worldIn.setBlockState(targetPos, this.getDefaultState(), 3);
+            worldIn.playSound(null, targetPos, this.getSoundType().getPlaceSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (!playerIn.capabilities.isCreativeMode) {
+                heldStack.shrink(1);
+            }
+        }
+        return true;
+    }
+
+    private BlockPos findLowestRope(BlockPos originPos, World worldIn) {
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(originPos.getX(), originPos.getY(), originPos.getZ());
+        while (worldIn.getBlockState(cursor.down()).getBlock() == this) {
+            cursor.move(EnumFacing.DOWN);
+        }
+        return cursor.toImmutable();
+    }
+
+    private boolean isHoldingRope(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() == Item.getItemFromBlock(this);
     }
 
     private boolean reelRope(World worldIn, BlockPos pos, EntityPlayer playerIn) {

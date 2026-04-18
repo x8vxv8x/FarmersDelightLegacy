@@ -5,18 +5,18 @@
       "item": "minecraft:apple"
     },
     {
-      "item": "minecraft:melon_slice"
+      "item": "minecraft:melon"
     },
     {
-      "item": "minecraft:melon_slice"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "listAllberry"
+      "item": "minecraft:melon"
     },
     {
       "type": "forge:ore_dict",
-      "ore": "listAllberry"
+      "ore": "cropSweetBerry"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "cropSweetBerry"
     },
     {
       "item": "farmersdelight:pumpkin_slice"

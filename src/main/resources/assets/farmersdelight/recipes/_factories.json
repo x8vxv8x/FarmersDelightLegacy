@@ -1,0 +1,5 @@
+{
+  "recipes": {
+    "smelting": "com.wdcftgg.farmersdelightlegacy.common.recipe.LegacyHeatingRecipe$Factory"
+  }
+}

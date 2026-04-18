@@ -3,13 +3,19 @@ package com.wdcftgg.farmersdelightlegacy.common.registry;
 import com.wdcftgg.farmersdelightlegacy.FarmersDelightLegacy;
 import com.wdcftgg.farmersdelightlegacy.common.ModCreativeTab;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemDrinkableTooltip;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemDogFood;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemFoodTooltip;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemHorseFeed;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemKnife;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemPlantableFood;
 import com.wdcftgg.farmersdelightlegacy.common.item.ItemRice;
+import com.wdcftgg.farmersdelightlegacy.common.item.ItemRottenTomato;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.*;
 
@@ -62,6 +68,17 @@ public final class ModItems {
             "wheat_dough"
     ));
 
+    private static final Set<String> STACK_TO_16 = new HashSet<>(Arrays.asList(
+            "apple_cider", "melon_juice", "milk_bottle", "hot_cocoa",
+            "glow_berry_custard", "fruit_salad", "mixed_salad", "nether_salad",
+            "cooked_rice", "bone_broth", "beef_stew", "chicken_soup", "vegetable_soup", "fish_stew",
+            "fried_rice", "pumpkin_soup", "baked_cod_stew", "noodle_soup",
+            "bacon_and_eggs", "pasta_with_meatballs", "pasta_with_mutton_chop", "mushroom_rice",
+            "roasted_mutton_chops", "vegetable_noodles", "steak_and_potatoes", "ratatouille",
+            "squid_ink_pasta", "grilled_salmon", "roast_chicken", "stuffed_pumpkin",
+            "honey_glazed_ham", "shepherds_pie", "dog_food", "horse_feed", "rotten_tomato"
+    ));
+
     public static final Map<String, Item> ITEMS = new LinkedHashMap<>();
 
     public static Item TOMATO;
@@ -82,7 +99,7 @@ public final class ModItems {
         TOMATO_SEEDS = register("tomato_seeds", new ItemSeeds(ModBlocks.BUDDING_TOMATOES, Blocks.FARMLAND));
         register("cabbage_seeds", new ItemSeeds(ModBlocks.CABBAGES, Blocks.FARMLAND));
         ONION = register("onion", new ItemPlantableFood(2, 0.4F, ModBlocks.ONIONS, Blocks.FARMLAND, ModBlocks.RICH_SOIL_FARMLAND));
-        RICE = register("rice", new ItemRice(ModBlocks.RICE));
+        RICE = register("rice", createRiceItem(ModBlocks.RICE));
         RICE_PANICLE = registerSimple("rice_panicle");
         registerFood("cabbage", 2, 0.4F);
         registerDrink("apple_cider", 4, 0.4F, true, "minecraft:absorption", SHORT_DURATION, 0, 1.0F,
@@ -163,12 +180,15 @@ public final class ModItems {
         registerDrink("melon_juice", 4, 0.4F, false, null, 0, 0, 0.0F,
                 ItemDrinkableTooltip.DrinkEffect.HEAL_MINOR, "farmersdelight.tooltip.melon_juice");
         registerFood("tomato_sauce", 4, 0.4F);
+        register("rotten_tomato", new ItemRottenTomato());
+        register("dog_food", new ItemDogFood(6, 0.6F));
+        register("horse_feed", new ItemHorseFeed(8, 0.8F));
 
-        registerKnife("flint_knife", Item.ToolMaterial.WOOD);
-        registerKnife("iron_knife", Item.ToolMaterial.IRON);
-        registerKnife("golden_knife", Item.ToolMaterial.GOLD);
-        registerKnife("diamond_knife", Item.ToolMaterial.DIAMOND);
-        registerKnife("netherite_knife", Item.ToolMaterial.DIAMOND);
+        registerKnife("flint_knife", Item.ToolMaterial.WOOD, 1.5D);
+        registerKnife("iron_knife", Item.ToolMaterial.IRON, 2.5D);
+        registerKnife("golden_knife", Item.ToolMaterial.GOLD, 0.5D);
+        registerKnife("diamond_knife", Item.ToolMaterial.DIAMOND, 3.5D);
+        registerKnife("netherite_knife", Item.ToolMaterial.DIAMOND, 4.5D);
 
         Set<String> blockNames = new LinkedHashSet<>(ModBlocks.BLOCKS.keySet());
         Set<String> existingNames = new LinkedHashSet<>(ITEMS.keySet());
@@ -229,16 +249,40 @@ public final class ModItems {
                 effectId == null ? null : new ResourceLocation(effectId), duration, amplifier, chance, drinkEffect, extraTooltipKeys));
     }
 
-    private static Item registerKnife(String path, Item.ToolMaterial material) {
-        return register(path, new ItemSword(material));
+    private static Item registerKnife(String path, Item.ToolMaterial material, double attackDamage) {
+        return register(path, new ItemKnife(material, attackDamage));
+    }
+
+    private static Item createRiceItem(Block cropBlock) {
+        if (!Loader.isModLoaded("fluidlogged_api")) {
+            return new ItemRice(cropBlock);
+        }
+
+        Item compatItem = instantiateCompatItem("com.wdcftgg.farmersdelightlegacy.common.compat.fluidlogged.ItemFluidloggedRice", cropBlock);
+        return compatItem != null ? compatItem : new ItemRice(cropBlock);
+    }
+
+    private static Item instantiateCompatItem(String className, Block cropBlock) {
+        try {
+            return (Item) Class.forName(className).getDeclaredConstructor(Block.class).newInstance(cropBlock);
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            FarmersDelightLegacy.LOGGER.warn("加载可选兼容物品失败：{}，已回退到默认实现。", className, exception);
+            return null;
+        }
     }
 
     private static Item register(String path, Item item) {
         item.setRegistryName(new ResourceLocation(FarmersDelightLegacy.MOD_ID, path));
         item.setTranslationKey(FarmersDelightLegacy.MOD_ID + "." + path);
         item.setCreativeTab(ModCreativeTab.TAB);
+        if (STACK_TO_16.contains(path)) {
+            item.setMaxStackSize(16);
+        }
         ITEMS.put(path, item);
         return item;
     }
-}
 
+    public static Item get(String path) {
+        return ITEMS.get(path);
+    }
+}

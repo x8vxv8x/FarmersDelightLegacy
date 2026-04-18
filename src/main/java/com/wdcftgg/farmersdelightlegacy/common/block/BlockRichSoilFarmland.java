@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -38,12 +39,10 @@ public class BlockRichSoilFarmland extends BlockFarmland {
         int moisture = state.getValue(MOISTURE);
         if (!this.hasWater(worldIn, pos) && !worldIn.isRainingAt(pos.up())) {
             if (moisture > 0) {
-                worldIn.setBlockState(pos, state.withProperty(MOISTURE, moisture - 1), 2);
-            } else if (!this.hasCrops(worldIn, pos)) {
-                this.turnToRichSoil(worldIn, pos);
+                setRichSoilFarmlandMoisture(worldIn, pos, moisture - 1);
             }
         } else if (moisture < 7) {
-            worldIn.setBlockState(pos, state.withProperty(MOISTURE, 7), 2);
+            setRichSoilFarmlandMoisture(worldIn, pos, 7);
         }
 
         this.tryBoostCropGrowth(worldIn, pos, state, rand);
@@ -147,14 +146,20 @@ public class BlockRichSoilFarmland extends BlockFarmland {
         }
     }
 
+    private void setRichSoilFarmlandMoisture(World worldIn, BlockPos pos, int moisture) {
+        int clampedMoisture = Math.max(0, Math.min(7, moisture));
+        IBlockState richFarmlandState = ModBlocks.RICH_SOIL_FARMLAND.getDefaultState().withProperty(MOISTURE, clampedMoisture);
+        worldIn.setBlockState(pos, richFarmlandState, 2);
+    }
+
     @Override
     public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, net.minecraft.util.EnumFacing direction, IPlantable plantable) {
-        if (direction != net.minecraft.util.EnumFacing.UP) {
+        if (direction != EnumFacing.UP) {
             return false;
         }
 
         IBlockState plant = plantable.getPlant(world, pos.up());
-        net.minecraft.block.Block plantBlock = plant.getBlock();
+        Block plantBlock = plant.getBlock();
         if (plantable.getPlantType(world, pos.up()) == EnumPlantType.Crop) {
             return true;
         }

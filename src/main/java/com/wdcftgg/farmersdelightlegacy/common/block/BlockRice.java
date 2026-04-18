@@ -2,10 +2,8 @@ package com.wdcftgg.farmersdelightlegacy.common.block;
 
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
-import git.jbredwards.fluidlogged_api.api.block.BlockWaterloggedPlant;
-import git.jbredwards.fluidlogged_api.api.util.FluidState;
-import git.jbredwards.fluidlogged_api.api.util.FluidloggedUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.IGrowable;
@@ -23,11 +21,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import java.util.Random;
 
-public class BlockRice extends BlockWaterloggedPlant implements IGrowable {
+public class BlockRice extends BlockBush implements IGrowable {
 
     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
     public static final PropertyBool SUPPORTING = PropertyBool.create("supporting");
@@ -44,7 +41,6 @@ public class BlockRice extends BlockWaterloggedPlant implements IGrowable {
         this.setHardness(0.0F);
         this.setSoundType(SoundType.PLANT);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, 0).withProperty(SUPPORTING, false));
-        this.parentFluid = FluidRegistry.WATER;
     }
 
     @Override
@@ -95,9 +91,14 @@ public class BlockRice extends BlockWaterloggedPlant implements IGrowable {
     }
 
     @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+        return super.canPlaceBlockAt(worldIn, pos) && this.hasNearbyWater(worldIn, pos.down());
+    }
+
+    @Override
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
         IBlockState soilState = worldIn.getBlockState(pos.down());
-        return this.canSustainBush(soilState) && hasContainedWater(worldIn, pos, state);
+        return this.canSustainBush(soilState) && this.hasNearbyWater(worldIn, pos.down());
     }
 
     @Override
@@ -195,8 +196,7 @@ public class BlockRice extends BlockWaterloggedPlant implements IGrowable {
 
     private boolean tryGrowPanicles(World worldIn, BlockPos pos, int panicleAge) {
         BlockPos abovePos = pos.up();
-        IBlockState aboveState = worldIn.getBlockState(abovePos);
-        if (!aboveState.getMaterial().isReplaceable()) {
+        if (!worldIn.isAirBlock(abovePos)) {
             return false;
         }
 
@@ -224,8 +224,12 @@ public class BlockRice extends BlockWaterloggedPlant implements IGrowable {
         }
     }
 
-    private boolean hasContainedWater(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
-        FluidState fluidState = FluidloggedUtils.getFluidState(worldIn, pos, state);
-        return !fluidState.isEmpty() && this.isFluidloggable(state, worldIn, pos, fluidState);
+    private boolean hasNearbyWater(World worldIn, BlockPos soilPos) {
+        for (EnumFacing facing : EnumFacing.Plane.HORIZONTAL) {
+            if (worldIn.getBlockState(soilPos.offset(facing)).getMaterial() == Material.WATER) {
+                return true;
+            }
+        }
+        return false;
     }
 }

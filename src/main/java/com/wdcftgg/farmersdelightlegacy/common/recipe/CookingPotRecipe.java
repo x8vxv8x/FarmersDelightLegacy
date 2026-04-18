@@ -15,13 +15,16 @@ public class CookingPotRecipe {
     private final ItemStack resultStack;
     private final ItemStack outputContainer;
     private final int cookTime;
+    private final float experience;
     private final boolean hasContainerDefinition;
 
-    public CookingPotRecipe(List<IngredientEntry> ingredients, ItemStack resultStack, ItemStack outputContainer, int cookTime, boolean hasContainerDefinition) {
+    public CookingPotRecipe(List<IngredientEntry> ingredients, ItemStack resultStack, ItemStack outputContainer,
+                            int cookTime, float experience, boolean hasContainerDefinition) {
         this.ingredients = new ArrayList<>(ingredients);
         this.resultStack = resultStack.copy();
         this.outputContainer = outputContainer.copy();
         this.cookTime = Math.max(1, cookTime);
+        this.experience = Math.max(0.0F, experience);
         this.hasContainerDefinition = hasContainerDefinition;
     }
 
@@ -39,6 +42,10 @@ public class CookingPotRecipe {
 
     public int getCookTime() {
         return this.cookTime;
+    }
+
+    public float getExperience() {
+        return this.experience;
     }
 
     public boolean hasContainerDefinition() {

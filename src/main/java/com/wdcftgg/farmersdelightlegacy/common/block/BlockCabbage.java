@@ -3,11 +3,16 @@ package com.wdcftgg.farmersdelightlegacy.common.block;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModBlocks;
 import com.wdcftgg.farmersdelightlegacy.common.registry.ModItems;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
+
+import java.util.Random;
 
 public class BlockCabbage extends BlockCrops {
 
@@ -45,7 +50,25 @@ public class BlockCabbage extends BlockCrops {
     }
 
     @Override
-    protected boolean canSustainBush(IBlockState state) {
-        return super.canSustainBush(state) || state.getBlock() == ModBlocks.RICH_SOIL_FARMLAND;
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (!this.canBlockStay(worldIn, pos, state)) {
+            worldIn.destroyBlock(pos, true);
+            return;
+        }
+        super.updateTick(worldIn, pos, state, rand);
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        if (!this.canBlockStay(worldIn, pos, state)) {
+            worldIn.destroyBlock(pos, true);
+            return;
+        }
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    }
+
+    @Override
+    public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
+        return EnumPlantType.Crop;
     }
 }

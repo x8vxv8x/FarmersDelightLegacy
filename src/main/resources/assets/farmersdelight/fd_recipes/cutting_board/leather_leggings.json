@@ -2,9 +2,7 @@
   "ingredients": [
     "minecraft:leather_leggings"
   ],
-  "tool": {
-    "tag": "forge:shears"
-  },
+  "tool": "ore:toolShears",
   "result": [
     {
       "item": "minecraft:leather",
