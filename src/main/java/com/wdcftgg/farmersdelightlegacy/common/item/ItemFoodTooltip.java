@@ -80,8 +80,10 @@ public class ItemFoodTooltip extends ItemFood {
                 effectTooltip.getStyle().setColor(TextFormatting.BLUE);
                 tooltip.add(effectTooltip.getFormattedText());
                 if (effectChance < 0.999F) {
-                    tooltip.add(TextFormatting.DARK_GRAY + new TextComponentTranslation("farmersdelight.tooltip.food.effect_chance",
-                            Math.round(effectChance * 100.0F)).getFormattedText());
+                    TextComponentTranslation translation = new TextComponentTranslation("farmersdelight.tooltip.food.effect_chance",
+                            Math.round(effectChance * 100.0F));
+                    translation.getStyle().setColor(TextFormatting.BLUE);
+                    tooltip.add(translation.getFormattedText());
                 }
             }
         }

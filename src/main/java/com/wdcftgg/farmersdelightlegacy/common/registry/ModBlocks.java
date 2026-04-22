@@ -50,9 +50,9 @@ public final class ModBlocks {
     public static final Block CABBAGE_CRATE = register("cabbage_crate", basicBlock(Material.WOOD, SoundType.WOOD, 2.0F));
     public static final Block TOMATO_CRATE = register("tomato_crate", basicBlock(Material.WOOD, SoundType.WOOD, 2.0F));
     public static final Block ONION_CRATE = register("onion_crate", basicBlock(Material.WOOD, SoundType.WOOD, 2.0F));
-    public static final Block RICE_BALE = register("rice_bale", basicBlock(Material.CLOTH, SoundType.PLANT, 0.5F));
+    public static final Block RICE_BALE = register("rice_bale", new BlockRiceBale());
     public static final Block RICE_BAG = register("rice_bag", basicBlock(Material.CLOTH, SoundType.CLOTH, 0.8F));
-    public static final Block STRAW_BALE = register("straw_bale", basicBlock(Material.CLOTH, SoundType.PLANT, 0.5F));
+    public static final Block STRAW_BALE = register("straw_bale", new BlockStrawBale());
     public static final Block SAFETY_NET = register("safety_net", new BlockSafetyNet());
     public static final Block ACACIA_CABINET = register("acacia_cabinet", new BlockCabinet());
     public static final Block BAMBOO_CABINET = register("bamboo_cabinet", new BlockCabinet());

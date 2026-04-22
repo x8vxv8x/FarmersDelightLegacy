@@ -253,17 +253,13 @@ public class ItemKnife extends ItemSword {
             }
 
             EntityLivingBase target = event.getEntityLiving();
-            if (isPigLike(target)) {
+            if ((isPigLike(target) || isHoglinLike(target)) && !isJuvenile(target)) {
                 int lootingLevel = EnchantmentHelper.getLootingModifier(attacker);
                 float chance = HAM_DROP_CHANCE + (lootingLevel * LOOTING_BONUS);
                 if (target.world.rand.nextFloat() < chance) {
                     Item hamItem = target.isBurning() ? ModItems.get("smoked_ham") : ModItems.get("ham");
                     addExtraDrop(event, hamItem);
                 }
-            }
-
-            if (isHoglinLike(target) && target.isBurning()) {
-                addExtraDrop(event, ModItems.get("smoked_ham"));
             }
 
             if (target instanceof EntityChicken) {
@@ -360,6 +356,15 @@ public class ItemKnife extends ItemSword {
         private static boolean isHoglinLike(EntityLivingBase target) {
             ResourceLocation entityId = EntityList.getKey(target);
             return entityId != null && "hoglin".equals(entityId.getPath());
+        }
+
+        private static boolean isJuvenile(EntityLivingBase target) {
+            try {
+                Object result = target.getClass().getMethod("isChild").invoke(target);
+                return result instanceof Boolean && (Boolean) result;
+            } catch (ReflectiveOperationException ignored) {
+                return false;
+            }
         }
 
         private static boolean isLeatherSource(EntityLivingBase target) {

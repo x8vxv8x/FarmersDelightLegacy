@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/wall_sign",
+  "parent": "block/block",
   "textures": {
     "particle": "#texture",
     "texture": "farmersdelight:item/canvas_sign"
