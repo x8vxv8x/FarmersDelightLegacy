@@ -117,6 +117,7 @@ farmersdelight.item.skillet.underwater=在水里可没法煎啊……
 farmersdelight.jei.chance=%1$s%%的概率
 farmersdelight.jei.cooking=烹饪
 farmersdelight.jei.campfire=营火烹饪
+farmersdelight.jei.campfire.time=烹饪时间：%s秒
 farmersdelight.jei.cutting=砧板
 farmersdelight.jei.decomposition=分解
 farmersdelight.jei.decomposition.accelerators=周围有以下催化物时加快

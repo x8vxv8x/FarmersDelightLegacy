@@ -1,6 +1,9 @@
 {
   "ingredients": [
-    "minecraft:cooked_fish"
+    {
+      "item": "minecraft:cooked_fish",
+      "data": 0
+    }
   ],
   "tool": {
     "tag": "forge:tools/knives"
