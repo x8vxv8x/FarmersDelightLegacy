@@ -1,11 +1,9 @@
 package com.wdcftgg.farmersdelightlegacy.common.compat.crafttweaker;
 
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.block.IBlock;
 import crafttweaker.api.block.IBlockState;
 import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IWorld;
-import net.minecraft.block.Block;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
