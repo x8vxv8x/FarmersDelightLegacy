@@ -20,24 +20,19 @@ public class WaterDoughRecipe extends IForgeRegistryEntry.Impl<IRecipe> implemen
 
         for (int slot = 0; slot < inv.getSizeInventory(); slot++) {
             ItemStack stack = inv.getStackInSlot(slot);
-            if (stack.isEmpty()) {
-                continue;
-            }
+            if (stack.isEmpty()) continue;
 
-            if (stack.getItem() == Items.WHEAT) {
-                wheatCount += stack.getCount();
-                continue;
+            Item item = stack.getItem();
+            if (item == Items.WHEAT) {
+                wheatCount++;
+            } else if (item == Items.WATER_BUCKET) {
+                waterBucketCount++;
+            } else {
+                return false;
             }
-
-            if (stack.getItem() == Items.WATER_BUCKET) {
-                waterBucketCount += stack.getCount();
-                continue;
-            }
-
-            return false;
         }
 
-        return wheatCount >= 1 && waterBucketCount == 1;
+        return wheatCount == 1 && waterBucketCount == 1;
     }
 
     @Override
