@@ -1,12 +1,12 @@
-# Farmer's Delight
+# Farmer's Delight Legacy
 
 <a href="https://www.curseforge.com/minecraft/mc-mods/farmers-delight-legacy">
-  <img src="http://cf.way2muchnoise.eu/full_398521_downloads.svg" alt="Curseforge Downloads">
+  <img src="http://cf.way2muchnoise.eu/full_1517486_downloads.svg" alt="Curseforge Downloads">
 </a>
 <br>
 <img src="https://i.imgur.com/gXOJZc1.png" width="50%">
 
-### Overview
+### Overview Legacy
 
 **Farmer's Delight** is a mod that gently expands upon farming and cooking in Minecraft.
 
