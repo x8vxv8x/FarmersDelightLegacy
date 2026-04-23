@@ -6,6 +6,7 @@
     "ore:cropOnion"
   ],
   "cookingtime": 200,
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:fried_rice",
     "count": 1

@@ -6,6 +6,7 @@
     "ore:listAllveggie"
   ],
   "cookingtime": 200,
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:chicken_soup",
     "count": 1

@@ -5,6 +5,7 @@
     "farmersdelight:rice",
     "ore:mushroomRiceIngredients"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:mushroom_rice",
     "count": 1

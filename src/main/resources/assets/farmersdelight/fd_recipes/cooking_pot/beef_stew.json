@@ -5,6 +5,7 @@
     "minecraft:potato"
   ],
   "cookingtime": 200,
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:beef_stew",
     "count": 1

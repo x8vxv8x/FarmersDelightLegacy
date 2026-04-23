@@ -5,6 +5,7 @@
     "ore:mayBeKelp",
     "ore:listAllporkraw"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:noodle_soup",
     "count": 1

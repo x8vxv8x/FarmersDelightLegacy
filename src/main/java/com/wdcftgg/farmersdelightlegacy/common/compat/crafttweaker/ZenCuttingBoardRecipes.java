@@ -11,12 +11,29 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("mods.farmersdelight.CuttingBoard")
 public final class ZenCuttingBoardRecipes {
 
+    private static final String[] DEFAULT_TOOL_TOKENS = new String[]{"ore:toolKnife"};
+
     private ZenCuttingBoardRecipes() {
     }
 
     @ZenMethod
     public static boolean addRecipe(String key, IIngredient[] inputIngredients, IItemStack[] resultStacks) {
-        return addRecipeAdvanced(key, inputIngredients, new IIngredient[0], resultStacks, null);
+        return registerRecipe(key, CraftTweakerCompatHelper.toIngredientTokens(inputIngredients), DEFAULT_TOOL_TOKENS, resultStacks, null);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeWithTool(String key, IIngredient[] inputIngredients, IIngredient[] toolIngredients,
+                                            IItemStack[] resultStacks) {
+        String[] toolTokens = CraftTweakerCompatHelper.toIngredientTokens(toolIngredients);
+        if (toolTokens == null || toolTokens.length == 0) {
+            return false;
+        }
+        return registerRecipe(key, CraftTweakerCompatHelper.toIngredientTokens(inputIngredients), toolTokens, resultStacks, null);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeWithoutTool(String key, IIngredient[] inputIngredients, IItemStack[] resultStacks) {
+        return registerRecipe(key, CraftTweakerCompatHelper.toIngredientTokens(inputIngredients), new String[0], resultStacks, null);
     }
 
     @ZenMethod
@@ -24,10 +41,39 @@ public final class ZenCuttingBoardRecipes {
                                             IItemStack[] resultStacks, float[] resultChances) {
         String[] inputTokens = CraftTweakerCompatHelper.toIngredientTokens(inputIngredients);
         String[] toolTokens = CraftTweakerCompatHelper.toIngredientTokens(toolIngredients);
-        if (toolTokens == null || toolTokens.length == 0) {
-            toolTokens = new String[]{"ore:toolKnife"};
+        if (toolIngredients == null) {
+            toolTokens = DEFAULT_TOOL_TOKENS;
         }
+        return registerRecipe(key, inputTokens, toolTokens, resultStacks, resultChances);
+    }
 
+    @ZenMethod
+    public static boolean addRecipe(String key, String[] inputTokens, String[] resultTokens) {
+        return addRecipeAdvanced(key, inputTokens, DEFAULT_TOOL_TOKENS, resultTokens, null, null);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeWithTool(String key, String[] inputTokens, String[] toolTokens, String[] resultTokens) {
+        if (toolTokens == null || toolTokens.length == 0) {
+            return false;
+        }
+        return addRecipeAdvanced(key, inputTokens, toolTokens, resultTokens, null, null);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeWithoutTool(String key, String[] inputTokens, String[] resultTokens) {
+        return addRecipeAdvanced(key, inputTokens, new String[0], resultTokens, null, null);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeAdvanced(String key, String[] inputTokens, String[] toolTokens,
+                                            String[] resultTokens, int[] resultCounts, float[] resultChances) {
+        String[] resolvedToolTokens = toolTokens == null ? DEFAULT_TOOL_TOKENS : toolTokens;
+        return CuttingBoardRecipeManager.registerScriptRecipe(key, inputTokens, resolvedToolTokens, resultTokens, resultCounts, resultChances);
+    }
+
+    private static boolean registerRecipe(String key, String[] inputTokens, String[] toolTokens,
+                                          IItemStack[] resultStacks, float[] resultChances) {
         if (resultStacks == null || resultStacks.length == 0) {
             return false;
         }
@@ -51,19 +97,23 @@ public final class ZenCuttingBoardRecipes {
     }
 
     @ZenMethod
-    public static boolean addRecipe(String key, String[] inputTokens, String[] resultTokens) {
-        return addRecipeAdvanced(key, inputTokens, new String[]{"ore:toolKnife"}, resultTokens, null, null);
-    }
-
-    @ZenMethod
-    public static boolean addRecipeAdvanced(String key, String[] inputTokens, String[] toolTokens,
-                                            String[] resultTokens, int[] resultCounts, float[] resultChances) {
-        return CuttingBoardRecipeManager.registerScriptRecipe(key, inputTokens, toolTokens, resultTokens, resultCounts, resultChances);
-    }
-
-    @ZenMethod
     public static boolean removeRecipe(String key) {
         return CuttingBoardRecipeManager.unregisterScriptRecipe(key);
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(IItemStack outputStack) {
+        return CuttingBoardRecipeManager.removeRecipesByOutput(CraftTweakerCompatHelper.stackOf(outputStack));
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(String outputItemId) {
+        return removeRecipesByOutput(outputItemId, 0);
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(String outputItemId, int outputMetadata) {
+        return CuttingBoardRecipeManager.removeRecipesByOutput(CraftTweakerCompatHelper.stackOf(outputItemId, 1, outputMetadata));
     }
 }
 

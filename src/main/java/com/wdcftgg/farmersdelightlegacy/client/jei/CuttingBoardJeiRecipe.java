@@ -20,11 +20,13 @@ public final class CuttingBoardJeiRecipe implements IRecipeWrapper {
     private final List<List<ItemStack>> inputOptions;
     private final List<ItemStack> outputs;
     private final List<Float> outputChances;
+    private final String recipeId;
 
-    private CuttingBoardJeiRecipe(List<List<ItemStack>> inputOptions, List<ItemStack> outputs, List<Float> outputChances) {
+    private CuttingBoardJeiRecipe(List<List<ItemStack>> inputOptions, List<ItemStack> outputs, List<Float> outputChances, String recipeId) {
         this.inputOptions = inputOptions;
         this.outputs = outputs;
         this.outputChances = outputChances;
+        this.recipeId = recipeId;
     }
 
     public static CuttingBoardJeiRecipe of(CuttingBoardRecipeManager.CuttingBoardRecipeView recipe) {
@@ -57,7 +59,7 @@ public final class CuttingBoardJeiRecipe implements IRecipeWrapper {
         List<List<ItemStack>> inputLists = new ArrayList<>();
         inputLists.add(toolOptions);
         inputLists.add(ingredientOptions);
-        return new CuttingBoardJeiRecipe(inputLists, outputStacks, resultChances);
+        return new CuttingBoardJeiRecipe(inputLists, outputStacks, resultChances, recipe.getRecipeId());
     }
 
     @Override
@@ -87,6 +89,10 @@ public final class CuttingBoardJeiRecipe implements IRecipeWrapper {
             return 1.0F;
         }
         return outputChances.get(outputIndex);
+    }
+
+    public String getRecipeId() {
+        return recipeId;
     }
 }
 

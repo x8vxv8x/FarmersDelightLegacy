@@ -45,5 +45,20 @@ public final class ZenCampfireRecipes {
     public static boolean removeRecipe(String key) {
         return CampfireCookingRecipeManager.unregisterScriptRecipe(key);
     }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(IItemStack outputStack) {
+        return CampfireCookingRecipeManager.removeRecipesByOutput(CraftTweakerCompatHelper.stackOf(outputStack));
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(String outputItemId) {
+        return removeRecipesByOutput(outputItemId, 0);
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(String outputItemId, int outputMetadata) {
+        return CampfireCookingRecipeManager.removeRecipesByOutput(CraftTweakerCompatHelper.stackOf(outputItemId, 1, outputMetadata));
+    }
 }
 

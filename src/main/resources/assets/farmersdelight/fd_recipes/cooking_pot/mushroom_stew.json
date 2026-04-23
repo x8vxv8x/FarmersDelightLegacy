@@ -4,6 +4,7 @@
     "minecraft:red_mushroom"
   ],
   "cookingtime": 200,
+  "experience": 1.0,
   "result": {
     "item": "minecraft:mushroom_stew",
     "count": 1

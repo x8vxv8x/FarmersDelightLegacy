@@ -6,14 +6,17 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public final class CampfireCookingRecipe {
 
+    private final String recipeId;
     private final List<IngredientEntry> ingredients;
     private final ItemStack resultStack;
     private final int cookingTime;
 
-    public CampfireCookingRecipe(List<IngredientEntry> ingredients, ItemStack resultStack, int cookingTime) {
+    public CampfireCookingRecipe(String recipeId, List<IngredientEntry> ingredients, ItemStack resultStack, int cookingTime) {
+        this.recipeId = Objects.requireNonNull(recipeId);
         this.ingredients = ingredients;
         this.resultStack = resultStack;
         this.cookingTime = cookingTime;
@@ -33,6 +36,10 @@ public final class CampfireCookingRecipe {
 
     public ItemStack getResultStack() {
         return resultStack.copy();
+    }
+
+    public String getRecipeId() {
+        return recipeId;
     }
 
     public List<IngredientEntry> getIngredients() {

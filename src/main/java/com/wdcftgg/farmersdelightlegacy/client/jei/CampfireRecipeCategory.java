@@ -65,6 +65,12 @@ public final class CampfireRecipeCategory implements IRecipeCategory<CampfireJei
     public void setRecipe(IRecipeLayout recipeLayout, CampfireJeiRecipe recipeWrapper, IIngredients ingredients) {
         recipeLayout.getItemStacks().init(0, true, 0, 0);
         recipeLayout.getItemStacks().init(1, false, OUTPUT_X, OUTPUT_Y);
+        recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+            if (input || slotIndex != 1 || ingredient == null || ingredient.isEmpty()) {
+                return;
+            }
+            JeiTooltipUtil.addRecipeIdTooltip(tooltip, recipeWrapper.getRecipeId());
+        });
         recipeLayout.getItemStacks().set(ingredients);
     }
 

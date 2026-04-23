@@ -5,6 +5,7 @@
     "ore:dogPrey",
     "farmersdelight:rice"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:dog_food",
     "count": 1

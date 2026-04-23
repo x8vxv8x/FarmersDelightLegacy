@@ -5,6 +5,7 @@
     "ore:listAllEgg",
     "minecraft:sugar"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:glow_berry_custard",
     "count": 1

@@ -64,6 +64,12 @@ public final class CookingPotRecipeCategory implements IRecipeCategory<CookingPo
         recipeLayout.getItemStacks().init(6, true, 62, 38);
         recipeLayout.getItemStacks().init(7, false, 94, 10);
         recipeLayout.getItemStacks().init(8, false, 94, 38);
+        recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+            if (input || slotIndex < 7 || ingredient == null || ingredient.isEmpty()) {
+                return;
+            }
+            JeiTooltipUtil.addRecipeIdTooltip(tooltip, recipeWrapper.getRecipeId());
+        });
         recipeLayout.getItemStacks().set(ingredients);
     }
 

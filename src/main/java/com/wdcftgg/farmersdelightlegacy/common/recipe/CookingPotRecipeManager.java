@@ -72,12 +72,40 @@ public final class CookingPotRecipeManager {
             return false;
         }
 
-        CookingPotRecipe recipe = new CookingPotRecipe(ingredients, resultStack, outputContainer,
+        CookingPotRecipe recipe = new CookingPotRecipe(key, ingredients, resultStack, outputContainer,
                 Math.max(1, cookTime), Math.max(0.0F, experience), hasContainerDefinition);
         synchronized (SCRIPT_RECIPES) {
             SCRIPT_RECIPES.put(key, recipe);
         }
         return true;
+    }
+
+    public static int removeRecipesByOutput(ItemStack outputStack) {
+        ensureLoaded();
+        if (outputStack.isEmpty()) {
+            return 0;
+        }
+
+        int removedCount = 0;
+        synchronized (SCRIPT_RECIPES) {
+            java.util.Iterator<Map.Entry<String, CookingPotRecipe>> iterator = SCRIPT_RECIPES.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, CookingPotRecipe> entry = iterator.next();
+                if (matchesOutput(entry.getValue(), outputStack)) {
+                    iterator.remove();
+                    removedCount++;
+                }
+            }
+        }
+
+        java.util.Iterator<CookingPotRecipe> iterator = RECIPES.iterator();
+        while (iterator.hasNext()) {
+            if (matchesOutput(iterator.next(), outputStack)) {
+                iterator.remove();
+                removedCount++;
+            }
+        }
+        return removedCount;
     }
 
     public static boolean unregisterScriptRecipe(String key) {
@@ -165,13 +193,13 @@ public final class CookingPotRecipeManager {
             }
             if (!resultItem.isEmpty()) {
                 addRecipe(ingredients.toArray(new String[0]), stackOf(resultItem, Math.max(1, resultCount), sourceModId), outputContainer,
-                        cookTime, experience, hasContainerDefinition, sourceModId);
+                        cookTime, experience, hasContainerDefinition, recipeResource.getRecipeId(), sourceModId);
             }
         }
     }
 
     private static void addRecipe(String[] ingredientPaths, ItemStack resultStack, ItemStack outputContainer,
-                                  int cookTime, float experience, boolean hasContainerDefinition, String defaultNamespace) {
+                                  int cookTime, float experience, boolean hasContainerDefinition, String recipeId, String defaultNamespace) {
         if (resultStack.isEmpty()) {
             return;
         }
@@ -197,7 +225,12 @@ public final class CookingPotRecipeManager {
             }
             ingredients.add(CookingPotRecipe.IngredientEntry.forItem(ingredientItem));
         }
-        RECIPES.add(new CookingPotRecipe(ingredients, resultStack, outputContainer, cookTime, experience, hasContainerDefinition));
+        RECIPES.add(new CookingPotRecipe(recipeId, ingredients, resultStack, outputContainer, cookTime, experience, hasContainerDefinition));
+    }
+
+    private static boolean matchesOutput(CookingPotRecipe recipe, ItemStack outputStack) {
+        ItemStack resultStack = recipe.getResultStack();
+        return !resultStack.isEmpty() && ItemStack.areItemsEqual(resultStack, outputStack);
     }
 
     private static Item itemOf(String path, String defaultNamespace) {

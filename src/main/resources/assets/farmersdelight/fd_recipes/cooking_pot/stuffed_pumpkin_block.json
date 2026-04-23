@@ -8,6 +8,7 @@
     "ore:listAllveggie"
   ],
   "cookingtime": 400,
+  "experience": 2.0,
   "result": {
     "item": "farmersdelight:stuffed_pumpkin_block",
     "count": 1

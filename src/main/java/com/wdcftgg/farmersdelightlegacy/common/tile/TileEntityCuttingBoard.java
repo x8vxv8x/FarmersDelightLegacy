@@ -59,7 +59,7 @@ public class TileEntityCuttingBoard extends TileEntity {
     }
 
     public List<ItemStack> processStoredItem(ItemStack toolStack) {
-        if (this.storedItem.isEmpty() || toolStack.isEmpty()) {
+        if (this.storedItem.isEmpty()) {
             return Collections.emptyList();
         }
         if (this.itemCarvingBoard) {

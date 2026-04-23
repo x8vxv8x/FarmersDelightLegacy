@@ -5,6 +5,7 @@
     "minecraft:carrot",
     "ore:listAllmushroom"
   ],
+  "experience": 1.0,
   "result": {
     "item": "minecraft:rabbit_stew",
     "count": 1

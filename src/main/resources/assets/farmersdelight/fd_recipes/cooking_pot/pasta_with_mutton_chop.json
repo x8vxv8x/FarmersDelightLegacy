@@ -4,6 +4,7 @@
     "ore:foodPasta",
     "farmersdelight:tomato_sauce"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:pasta_with_mutton_chop",
     "count": 1

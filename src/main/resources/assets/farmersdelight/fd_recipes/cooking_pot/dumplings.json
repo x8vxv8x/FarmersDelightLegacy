@@ -5,6 +5,7 @@
     "ore:cropOnion",
     "ore:dumplingFilling"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:dumplings",
     "count": 2

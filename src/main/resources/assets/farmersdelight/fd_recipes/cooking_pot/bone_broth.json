@@ -3,6 +3,7 @@
     "ore:bone",
     "ore:listAllmushroom"
   ],
+  "experience": 0.35,
   "result": {
     "item": "farmersdelight:bone_broth",
     "count": 1

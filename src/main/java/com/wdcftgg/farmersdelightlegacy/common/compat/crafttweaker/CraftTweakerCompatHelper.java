@@ -30,6 +30,14 @@ final class CraftTweakerCompatHelper {
         return new ItemStack(item, Math.max(1, count));
     }
 
+    static ItemStack stackOf(String itemId, int count, int metadata) {
+        Item item = itemOf(itemId);
+        if (item == null) {
+            return ItemStack.EMPTY;
+        }
+        return new ItemStack(item, Math.max(1, count), Math.max(0, metadata));
+    }
+
     static ItemStack stackOf(IItemStack stack) {
         if (stack == null) {
             return ItemStack.EMPTY;

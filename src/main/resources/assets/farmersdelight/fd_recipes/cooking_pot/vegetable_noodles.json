@@ -6,6 +6,7 @@
     "ore:cropCabbage",
     "ore:listAllveggie"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:vegetable_noodles",
     "count": 1

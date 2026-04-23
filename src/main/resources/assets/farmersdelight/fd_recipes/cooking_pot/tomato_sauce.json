@@ -4,6 +4,7 @@
     "ore:cropTomato"
   ],
   "cookingtime": 100,
+  "experience": 0.35,
   "result": {
     "item": "farmersdelight:tomato_sauce",
     "count": 1

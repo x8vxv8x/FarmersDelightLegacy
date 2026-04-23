@@ -5,6 +5,7 @@
     "ore:listAllEgg",
     "ore:cropTomato"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:baked_cod_stew",
     "count": 1

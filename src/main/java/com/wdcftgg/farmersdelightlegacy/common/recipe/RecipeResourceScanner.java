@@ -94,6 +94,14 @@ public final class RecipeResourceScanner {
             return relativePath;
         }
 
+        public String getRecipeId() {
+            String recipePath = this.relativePath;
+            if (recipePath.endsWith(".json")) {
+                recipePath = recipePath.substring(0, recipePath.length() - 5);
+            }
+            return this.modId + ":" + recipePath;
+        }
+
         public JsonObject getJsonObject() {
             return jsonObject;
         }

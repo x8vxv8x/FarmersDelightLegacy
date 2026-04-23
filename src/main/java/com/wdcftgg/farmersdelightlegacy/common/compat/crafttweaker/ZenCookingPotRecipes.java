@@ -21,6 +21,16 @@ public final class ZenCookingPotRecipes {
     }
 
     @ZenMethod
+    public static boolean addRecipeWithContainer(String key, IIngredient[] ingredients, IItemStack result, IItemStack outputContainerStack) {
+        return addRecipeAdvanced(key, ingredients, result, outputContainerStack, 200, 0.35F, true);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeWithoutContainer(String key, IIngredient[] ingredients, IItemStack result) {
+        return addRecipeAdvanced(key, ingredients, result, null, 200, 0.35F, true);
+    }
+
+    @ZenMethod
     public static boolean addRecipeAdvanced(String key, IIngredient[] ingredients, IItemStack result,
                                             IItemStack outputContainerStack,
                                             int cookingTime, float experience, boolean hasContainerDefinition) {
@@ -40,6 +50,18 @@ public final class ZenCookingPotRecipes {
     }
 
     @ZenMethod
+    public static boolean addRecipeWithContainer(String key, String[] ingredientTokens, String resultItemId, int resultCount,
+                                                 String outputContainerItemId, int outputContainerCount) {
+        return addRecipeAdvanced(key, ingredientTokens, resultItemId, resultCount,
+                outputContainerItemId, outputContainerCount, 200, 0.35F, true);
+    }
+
+    @ZenMethod
+    public static boolean addRecipeWithoutContainer(String key, String[] ingredientTokens, String resultItemId, int resultCount) {
+        return addRecipeAdvanced(key, ingredientTokens, resultItemId, resultCount, "", 1, 200, 0.35F, true);
+    }
+
+    @ZenMethod
     public static boolean addRecipeAdvanced(String key, String[] ingredientTokens, String resultItemId, int resultCount,
                                             String outputContainerItemId, int outputContainerCount,
                                             int cookingTime, float experience, boolean hasContainerDefinition) {
@@ -54,6 +76,21 @@ public final class ZenCookingPotRecipes {
     @ZenMethod
     public static boolean removeRecipe(String key) {
         return CookingPotRecipeManager.unregisterScriptRecipe(key);
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(IItemStack outputStack) {
+        return CookingPotRecipeManager.removeRecipesByOutput(CraftTweakerCompatHelper.stackOf(outputStack));
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(String outputItemId) {
+        return removeRecipesByOutput(outputItemId, 0);
+    }
+
+    @ZenMethod
+    public static int removeRecipesByOutput(String outputItemId, int outputMetadata) {
+        return CookingPotRecipeManager.removeRecipesByOutput(CraftTweakerCompatHelper.stackOf(outputItemId, 1, outputMetadata));
     }
 }
 

@@ -28,7 +28,7 @@ public final class CuttingBoardRecipeManager {
 
     public static boolean hasRecipe(ItemStack inputStack, ItemStack toolStack) {
         ensureLoaded();
-        if (inputStack.isEmpty() || toolStack.isEmpty()) {
+        if (inputStack.isEmpty()) {
             return false;
         }
 
@@ -42,7 +42,7 @@ public final class CuttingBoardRecipeManager {
 
     public static List<ItemStack> getProcessedResults(ItemStack inputStack, ItemStack toolStack, Random random) {
         ensureLoaded();
-        if (inputStack.isEmpty() || toolStack.isEmpty()) {
+        if (inputStack.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -72,6 +72,7 @@ public final class CuttingBoardRecipeManager {
         List<CuttingBoardRecipeView> result = new ArrayList<>();
         for (CuttingRecipeEntry recipeEntry : getAllRecipeEntries()) {
             result.add(new CuttingBoardRecipeView(
+                    recipeEntry.recipeId,
                     recipeEntry.inputMatcher.asStacks(),
                     recipeEntry.toolMatcher.asStacks(),
                     recipeEntry.getDisplayResults(),
@@ -87,11 +88,14 @@ public final class CuttingBoardRecipeManager {
         }
 
         IngredientMatcher inputMatcher = IngredientMatcher.fromTokens(inputTokens, FarmersDelightLegacy.MOD_ID);
-        String[] resolvedToolTokens = toolTokens;
-        if (resolvedToolTokens == null || resolvedToolTokens.length == 0) {
-            resolvedToolTokens = new String[]{DEFAULT_TOOL_TOKEN};
+        IngredientMatcher toolMatcher;
+        if (toolTokens == null) {
+            toolMatcher = IngredientMatcher.fromToken(DEFAULT_TOOL_TOKEN, FarmersDelightLegacy.MOD_ID);
+        } else if (toolTokens.length == 0) {
+            toolMatcher = IngredientMatcher.noTool();
+        } else {
+            toolMatcher = IngredientMatcher.fromTokens(toolTokens, FarmersDelightLegacy.MOD_ID);
         }
-        IngredientMatcher toolMatcher = IngredientMatcher.fromTokens(resolvedToolTokens, FarmersDelightLegacy.MOD_ID);
         if (!inputMatcher.isValid() || !toolMatcher.isValid()) {
             return false;
         }
@@ -120,7 +124,7 @@ public final class CuttingBoardRecipeManager {
             resultEntries.add(new ResultEntry(new ItemStack(item, count), chance));
         }
 
-        CuttingRecipeEntry recipeEntry = new CuttingRecipeEntry(inputMatcher, toolMatcher, resultEntries);
+        CuttingRecipeEntry recipeEntry = new CuttingRecipeEntry(key, inputMatcher, toolMatcher, resultEntries);
         synchronized (SCRIPT_RECIPES) {
             SCRIPT_RECIPES.put(key, recipeEntry);
         }
@@ -136,17 +140,51 @@ public final class CuttingBoardRecipeManager {
         }
     }
 
+    public static int removeRecipesByOutput(ItemStack outputStack) {
+        ensureLoaded();
+        if (outputStack.isEmpty()) {
+            return 0;
+        }
+
+        int removedCount = 0;
+        synchronized (SCRIPT_RECIPES) {
+            java.util.Iterator<Map.Entry<String, CuttingRecipeEntry>> iterator = SCRIPT_RECIPES.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, CuttingRecipeEntry> entry = iterator.next();
+                if (entry.getValue().hasOutput(outputStack)) {
+                    iterator.remove();
+                    removedCount++;
+                }
+            }
+        }
+
+        java.util.Iterator<CuttingRecipeEntry> iterator = RECIPES.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().hasOutput(outputStack)) {
+                iterator.remove();
+                removedCount++;
+            }
+        }
+        return removedCount;
+    }
+
     public static final class CuttingBoardRecipeView {
+        private final String recipeId;
         private final List<ItemStack> inputOptions;
         private final List<ItemStack> toolOptions;
         private final List<ItemStack> resultStacks;
         private final List<Float> resultChances;
 
-        private CuttingBoardRecipeView(List<ItemStack> inputOptions, List<ItemStack> toolOptions, List<ItemStack> resultStacks, List<Float> resultChances) {
+        private CuttingBoardRecipeView(String recipeId, List<ItemStack> inputOptions, List<ItemStack> toolOptions, List<ItemStack> resultStacks, List<Float> resultChances) {
+            this.recipeId = recipeId;
             this.inputOptions = copyStacks(inputOptions);
             this.toolOptions = copyStacks(toolOptions);
             this.resultStacks = copyStacks(resultStacks);
             this.resultChances = new ArrayList<>(resultChances);
+        }
+
+        public String getRecipeId() {
+            return recipeId;
         }
 
         public List<ItemStack> getInputOptions() {
@@ -178,11 +216,11 @@ public final class CuttingBoardRecipeManager {
 
     private static void loadJsonRecipes() {
         for (RecipeResourceScanner.RecipeJsonResource recipeResource : RecipeResourceScanner.scan("cutting_board")) {
-            parseAndRegister(recipeResource.getJsonObject(), recipeResource.getModId());
+            parseAndRegister(recipeResource.getJsonObject(), recipeResource.getModId(), recipeResource.getRecipeId());
         }
     }
 
-    private static void parseAndRegister(JsonObject recipeJson, String defaultNamespace) {
+    private static void parseAndRegister(JsonObject recipeJson, String defaultNamespace, String recipeId) {
         if (!passesConditions(recipeJson)) {
             return;
         }
@@ -192,7 +230,7 @@ public final class CuttingBoardRecipeManager {
         if (!inputMatcher.isValid() || !toolMatcher.isValid() || resultEntries.isEmpty()) {
             return;
         }
-        RECIPES.add(new CuttingRecipeEntry(inputMatcher, toolMatcher, resultEntries));
+        RECIPES.add(new CuttingRecipeEntry(recipeId, inputMatcher, toolMatcher, resultEntries));
     }
 
     private static boolean passesConditions(JsonObject recipeJson) {
@@ -258,12 +296,29 @@ public final class CuttingBoardRecipeManager {
 
     private static IngredientMatcher readTool(JsonObject recipeJson, String defaultNamespace) {
         if (recipeJson.has("tool")) {
-            IngredientMatcher toolMatcher = IngredientMatcher.fromJson(recipeJson.get("tool"), defaultNamespace);
+            JsonElement toolElement = recipeJson.get("tool");
+            if (isEmptyToolDefinition(toolElement)) {
+                return IngredientMatcher.noTool();
+            }
+            IngredientMatcher toolMatcher = IngredientMatcher.fromJson(toolElement, defaultNamespace);
             if (toolMatcher.isValid()) {
                 return toolMatcher;
             }
         }
         return IngredientMatcher.fromToken(DEFAULT_TOOL_TOKEN, defaultNamespace);
+    }
+
+    private static boolean isEmptyToolDefinition(JsonElement toolElement) {
+        if (toolElement == null || toolElement.isJsonNull()) {
+            return true;
+        }
+        if (toolElement.isJsonArray()) {
+            return toolElement.getAsJsonArray().size() == 0;
+        }
+        if (toolElement.isJsonPrimitive()) {
+            return toolElement.getAsString().isEmpty();
+        }
+        return false;
     }
 
     private static List<ResultEntry> readResults(JsonObject recipeJson, String defaultNamespace) {
@@ -357,11 +412,13 @@ public final class CuttingBoardRecipeManager {
 
     private static final class CuttingRecipeEntry {
 
+        private final String recipeId;
         private final IngredientMatcher inputMatcher;
         private final IngredientMatcher toolMatcher;
         private final List<ResultEntry> resultEntries;
 
-        private CuttingRecipeEntry(IngredientMatcher inputMatcher, IngredientMatcher toolMatcher, List<ResultEntry> resultEntries) {
+        private CuttingRecipeEntry(String recipeId, IngredientMatcher inputMatcher, IngredientMatcher toolMatcher, List<ResultEntry> resultEntries) {
+            this.recipeId = recipeId;
             this.inputMatcher = inputMatcher;
             this.toolMatcher = toolMatcher;
             this.resultEntries = new ArrayList<>(resultEntries);
@@ -397,6 +454,15 @@ public final class CuttingBoardRecipeManager {
             }
             return display;
         }
+
+        private boolean hasOutput(ItemStack outputStack) {
+            for (ResultEntry entry : resultEntries) {
+                if (!entry.stack.isEmpty() && ItemStack.areItemsEqual(entry.stack, outputStack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private static final class ResultEntry {
@@ -414,14 +480,20 @@ public final class CuttingBoardRecipeManager {
 
         private final List<ItemStack> itemStacks;
         private final List<String> oreDictNames;
+        private final boolean noToolRequired;
 
-        private IngredientMatcher(List<ItemStack> itemStacks, List<String> oreDictNames) {
+        private IngredientMatcher(List<ItemStack> itemStacks, List<String> oreDictNames, boolean noToolRequired) {
             this.itemStacks = itemStacks;
             this.oreDictNames = oreDictNames;
+            this.noToolRequired = noToolRequired;
         }
 
         private static IngredientMatcher invalid() {
-            return new IngredientMatcher(Collections.<ItemStack>emptyList(), Collections.<String>emptyList());
+            return new IngredientMatcher(Collections.<ItemStack>emptyList(), Collections.<String>emptyList(), false);
+        }
+
+        private static IngredientMatcher noTool() {
+            return new IngredientMatcher(Collections.<ItemStack>emptyList(), Collections.<String>emptyList(), true);
         }
 
         private static IngredientMatcher fromToken(String token, String defaultNamespace) {
@@ -432,7 +504,7 @@ public final class CuttingBoardRecipeManager {
             List<ItemStack> itemStacks = new ArrayList<>();
             List<String> oreDictNames = new ArrayList<>();
             addToken(token, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames, defaultNamespace);
-            return new IngredientMatcher(itemStacks, oreDictNames);
+            return new IngredientMatcher(itemStacks, oreDictNames, false);
         }
 
         private static IngredientMatcher fromTokens(String[] tokens, String defaultNamespace) {
@@ -445,7 +517,7 @@ public final class CuttingBoardRecipeManager {
             for (String token : tokens) {
                 addToken(token, OreDictionary.WILDCARD_VALUE, itemStacks, oreDictNames, defaultNamespace);
             }
-            return new IngredientMatcher(itemStacks, oreDictNames);
+            return new IngredientMatcher(itemStacks, oreDictNames, false);
         }
 
         private static IngredientMatcher fromJson(JsonElement element, String defaultNamespace) {
@@ -456,7 +528,7 @@ public final class CuttingBoardRecipeManager {
             List<ItemStack> itemStacks = new ArrayList<>();
             List<String> oreDictNames = new ArrayList<>();
             collectTokens(element, itemStacks, oreDictNames, defaultNamespace);
-            return new IngredientMatcher(itemStacks, oreDictNames);
+            return new IngredientMatcher(itemStacks, oreDictNames, false);
         }
 
         private static void collectTokens(JsonElement element, List<ItemStack> itemStacks, List<String> oreDictNames, String defaultNamespace) {
@@ -528,7 +600,7 @@ public final class CuttingBoardRecipeManager {
         }
 
         private boolean isValid() {
-            return !itemStacks.isEmpty() || !oreDictNames.isEmpty();
+            return noToolRequired || !itemStacks.isEmpty() || !oreDictNames.isEmpty();
         }
 
         private boolean matches(ItemStack stack) {
@@ -563,6 +635,9 @@ public final class CuttingBoardRecipeManager {
         }
 
         private boolean matchesTool(ItemStack stack) {
+            if (noToolRequired) {
+                return stack.isEmpty();
+            }
             if (stack.isEmpty()) {
                 return false;
             }
@@ -606,6 +681,9 @@ public final class CuttingBoardRecipeManager {
         }
 
         private List<ItemStack> asStacks() {
+            if (noToolRequired) {
+                return Collections.emptyList();
+            }
             List<ItemStack> result = new ArrayList<>();
             for (ItemStack itemStack : itemStacks) {
                 int metadata = itemStack.getMetadata();

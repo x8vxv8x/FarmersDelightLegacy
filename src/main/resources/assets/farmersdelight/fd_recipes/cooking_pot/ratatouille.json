@@ -5,6 +5,7 @@
     "minecraft:beetroot",
     "ore:listAllveggie"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:ratatouille",
     "count": 1

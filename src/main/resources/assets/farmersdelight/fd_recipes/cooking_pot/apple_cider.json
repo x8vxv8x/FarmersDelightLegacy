@@ -5,6 +5,7 @@
     "minecraft:sugar"
   ],
   "cookingtime": 200,
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:apple_cider",
     "count": 1

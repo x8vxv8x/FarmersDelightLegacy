@@ -105,6 +105,13 @@ public class BlockCuttingBoard extends BlockHorizontal implements ITileEntityPro
         }
 
         if (heldStack.isEmpty() && hand == EnumHand.MAIN_HAND) {
+            if (CuttingBoardRecipeManager.hasRecipe(cuttingBoard.getStoredItem(), ItemStack.EMPTY)) {
+                if (!worldIn.isRemote) {
+                    processStoredItem(worldIn, pos, state, playerIn, cuttingBoard, ItemStack.EMPTY);
+                }
+                return true;
+            }
+
             if (!worldIn.isRemote) {
                 ItemStack removedStack = cuttingBoard.removeStoredItem();
                 if (!removedStack.isEmpty() && !playerIn.inventory.addItemStackToInventory(removedStack)) {
@@ -118,30 +125,7 @@ public class BlockCuttingBoard extends BlockHorizontal implements ITileEntityPro
         if (!heldStack.isEmpty()) {
             if (CuttingBoardRecipeManager.hasRecipe(cuttingBoard.getStoredItem(), heldStack)) {
                 if (!worldIn.isRemote) {
-                    ItemStack particleStack = cuttingBoard.getStoredItem();
-                    List<ItemStack> craftedStacks = cuttingBoard.processStoredItem(heldStack);
-                    EnumFacing dropFacing = state.getValue(FACING).rotateYCCW();
-                    for (ItemStack craftedStack : craftedStacks) {
-                        if (craftedStack.isEmpty()) {
-                            continue;
-                        }
-                        EntityItem drop = new EntityItem(
-                                worldIn,
-                                pos.getX() + 0.5D + (dropFacing.getXOffset() * 0.2D),
-                                pos.getY() + 0.2D,
-                                pos.getZ() + 0.5D + (dropFacing.getZOffset() * 0.2D),
-                                craftedStack.copy());
-                        drop.motionX = dropFacing.getXOffset() * 0.2D;
-                        drop.motionY = 0.0D;
-                        drop.motionZ = dropFacing.getZOffset() * 0.2D;
-                        worldIn.spawnEntity(drop);
-                    }
-                    heldStack.damageItem(1, playerIn);
-                    worldIn.playSound(null, pos, ModSounds.CUTTING_BOARD_KNIFE, SoundCategory.BLOCKS, 0.9F, 1.0F);
-                    spawnCuttingParticles(worldIn, pos, particleStack, 5);
-                    if (playerIn instanceof net.minecraft.entity.player.EntityPlayerMP) {
-                        ModAdvancements.USE_CUTTING_BOARD.trigger((net.minecraft.entity.player.EntityPlayerMP) playerIn);
-                    }
+                    processStoredItem(worldIn, pos, state, playerIn, cuttingBoard, heldStack);
                 }
                 return true;
             }
@@ -151,6 +135,35 @@ public class BlockCuttingBoard extends BlockHorizontal implements ITileEntityPro
         }
 
         return false;
+    }
+
+    private static void processStoredItem(World world, BlockPos pos, IBlockState state, EntityPlayer player, TileEntityCuttingBoard cuttingBoard, ItemStack toolStack) {
+        ItemStack particleStack = cuttingBoard.getStoredItem();
+        List<ItemStack> craftedStacks = cuttingBoard.processStoredItem(toolStack);
+        EnumFacing dropFacing = state.getValue(FACING).rotateYCCW();
+        for (ItemStack craftedStack : craftedStacks) {
+            if (craftedStack.isEmpty()) {
+                continue;
+            }
+            EntityItem drop = new EntityItem(
+                    world,
+                    pos.getX() + 0.5D + (dropFacing.getXOffset() * 0.2D),
+                    pos.getY() + 0.2D,
+                    pos.getZ() + 0.5D + (dropFacing.getZOffset() * 0.2D),
+                    craftedStack.copy());
+            drop.motionX = dropFacing.getXOffset() * 0.2D;
+            drop.motionY = 0.0D;
+            drop.motionZ = dropFacing.getZOffset() * 0.2D;
+            world.spawnEntity(drop);
+        }
+        if (!toolStack.isEmpty()) {
+            toolStack.damageItem(1, player);
+        }
+        world.playSound(null, pos, ModSounds.CUTTING_BOARD_KNIFE, SoundCategory.BLOCKS, 0.9F, 1.0F);
+        spawnCuttingParticles(world, pos, particleStack, 5);
+        if (player instanceof net.minecraft.entity.player.EntityPlayerMP) {
+            ModAdvancements.USE_CUTTING_BOARD.trigger((net.minecraft.entity.player.EntityPlayerMP) player);
+        }
     }
 
     @Override

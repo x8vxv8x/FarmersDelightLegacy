@@ -5,6 +5,7 @@
     "ore:dyeBrown",
     "ore:dyeBrown"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:hot_cocoa",
     "count": 1

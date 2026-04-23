@@ -4,6 +4,7 @@
     "farmersdelight:tomato_sauce",
     "ore:cropOnion"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:fish_stew",
     "count": 1

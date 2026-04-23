@@ -11,6 +11,7 @@ import java.util.Objects;
 
 public class CookingPotRecipe {
 
+    private final String recipeId;
     private final List<IngredientEntry> ingredients;
     private final ItemStack resultStack;
     private final ItemStack outputContainer;
@@ -18,8 +19,9 @@ public class CookingPotRecipe {
     private final float experience;
     private final boolean hasContainerDefinition;
 
-    public CookingPotRecipe(List<IngredientEntry> ingredients, ItemStack resultStack, ItemStack outputContainer,
+    public CookingPotRecipe(String recipeId, List<IngredientEntry> ingredients, ItemStack resultStack, ItemStack outputContainer,
                             int cookTime, float experience, boolean hasContainerDefinition) {
+        this.recipeId = Objects.requireNonNull(recipeId);
         this.ingredients = new ArrayList<>(ingredients);
         this.resultStack = resultStack.copy();
         this.outputContainer = outputContainer.copy();
@@ -30,6 +32,10 @@ public class CookingPotRecipe {
 
     public List<IngredientEntry> getIngredients() {
         return Collections.unmodifiableList(this.ingredients);
+    }
+
+    public String getRecipeId() {
+        return this.recipeId;
     }
 
     public ItemStack getResultStack() {

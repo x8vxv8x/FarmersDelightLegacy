@@ -75,10 +75,12 @@ public final class CuttingBoardRecipeCategory implements IRecipeCategory<Cutting
             int outputIndex = slotIndex - 2;
             float chance = recipeWrapper.getOutputChance(outputIndex);
             if (chance >= 1.0F) {
+                JeiTooltipUtil.addRecipeIdTooltip(tooltip, recipeWrapper.getRecipeId());
                 return;
             }
             String chancePercent = chance < 0.01F ? "<1" : Integer.toString((int) (chance * 100.0F));
             tooltip.add(1, TextFormatting.GOLD + I18n.format("farmersdelight.jei.chance", chancePercent));
+            JeiTooltipUtil.addRecipeIdTooltip(tooltip, recipeWrapper.getRecipeId());
         });
 
         recipeLayout.getItemStacks().set(ingredients);

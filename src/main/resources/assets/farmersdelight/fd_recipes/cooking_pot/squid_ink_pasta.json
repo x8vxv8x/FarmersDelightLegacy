@@ -5,6 +5,7 @@
     "ore:cropTomato",
     "ore:dyeBlack"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:squid_ink_pasta",
     "count": 1

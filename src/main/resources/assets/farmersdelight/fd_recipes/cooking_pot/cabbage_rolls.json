@@ -4,6 +4,7 @@
     "ore:cabbageRoolIngredients"
   ],
   "cookingtime": 100,
+  "experience": 0.35,
   "result": {
     "item": "farmersdelight:cabbage_rolls",
     "count": 1

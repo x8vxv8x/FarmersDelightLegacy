@@ -67,11 +67,39 @@ public final class CampfireCookingRecipeManager {
             return false;
         }
 
-        CampfireCookingRecipe recipe = new CampfireCookingRecipe(ingredients, resultStack.copy(), Math.max(1, cookingTime));
+        CampfireCookingRecipe recipe = new CampfireCookingRecipe(key, ingredients, resultStack.copy(), Math.max(1, cookingTime));
         synchronized (SCRIPT_RECIPES) {
             SCRIPT_RECIPES.put(key, recipe);
         }
         return true;
+    }
+
+    public static int removeRecipesByOutput(ItemStack outputStack) {
+        ensureLoaded();
+        if (outputStack.isEmpty()) {
+            return 0;
+        }
+
+        int removedCount = 0;
+        synchronized (SCRIPT_RECIPES) {
+            java.util.Iterator<Map.Entry<String, CampfireCookingRecipe>> iterator = SCRIPT_RECIPES.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, CampfireCookingRecipe> entry = iterator.next();
+                if (matchesOutput(entry.getValue(), outputStack)) {
+                    iterator.remove();
+                    removedCount++;
+                }
+            }
+        }
+
+        java.util.Iterator<CampfireCookingRecipe> iterator = RECIPES.iterator();
+        while (iterator.hasNext()) {
+            if (matchesOutput(iterator.next(), outputStack)) {
+                iterator.remove();
+                removedCount++;
+            }
+        }
+        return removedCount;
     }
 
     public static boolean unregisterScriptRecipe(String key) {
@@ -116,8 +144,13 @@ public final class CampfireCookingRecipeManager {
             if (ingredients.isEmpty() || result.isEmpty()) {
                 continue;
             }
-            RECIPES.add(new CampfireCookingRecipe(ingredients, result, cookingTime));
+            RECIPES.add(new CampfireCookingRecipe(recipeResource.getRecipeId(), ingredients, result, cookingTime));
         }
+    }
+
+    private static boolean matchesOutput(CampfireCookingRecipe recipe, ItemStack outputStack) {
+        ItemStack resultStack = recipe.getResultStack();
+        return !resultStack.isEmpty() && ItemStack.areItemsEqual(resultStack, outputStack);
     }
 
     private static List<CampfireCookingRecipe.IngredientEntry> parseIngredients(JsonElement ingredientElement, String defaultNamespace) {

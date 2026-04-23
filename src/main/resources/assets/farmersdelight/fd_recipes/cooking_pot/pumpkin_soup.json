@@ -5,6 +5,7 @@
     "ore:listAllporkraw",
     "ore:listAllmilk"
   ],
+  "experience": 1.0,
   "result": {
     "item": "farmersdelight:pumpkin_soup",
     "count": 1

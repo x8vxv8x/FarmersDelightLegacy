@@ -1,5 +1,6 @@
 package com.wdcftgg.farmersdelightlegacy.common.tile;
 
+import com.wdcftgg.farmersdelightlegacy.common.block.BlockCookingPot;
 import com.wdcftgg.farmersdelightlegacy.common.block.BlockSkillet;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipe;
 import com.wdcftgg.farmersdelightlegacy.common.recipe.CampfireCookingRecipeManager;
@@ -157,7 +158,12 @@ public class TileEntitySkillet extends TileEntity implements IInventory, ITickab
 
         boolean support = HeatSourceHelper.hasVisualSupportForCookware(this.world, this.pos);
         if (state.getValue(BlockSkillet.SUPPORT) != support) {
+            NBTTagCompound savedData = this.writeToNBT(new NBTTagCompound());
             this.world.setBlockState(this.pos, state.withProperty(BlockSkillet.SUPPORT, support), 2);
+            TileEntity te = this.world.getTileEntity(this.pos);
+            if (te instanceof TileEntitySkillet) {
+                te.readFromNBT(savedData);
+            }
         }
     }
 
